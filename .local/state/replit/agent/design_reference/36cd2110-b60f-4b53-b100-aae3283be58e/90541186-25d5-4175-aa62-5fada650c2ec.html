@@ -1,0 +1,1207 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedEn Enterprise Skill Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            },
+            fontFamily: {
+                sans: ["Inter", "system-ui", "sans-serif"],
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(222.2 84% 4.9%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(222.2 84% 4.9%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(222.2 84% 4.9%);
+            --primary: hsl(221.2 83.2% 53.3%);
+            --primary-foreground: hsl(210 40% 98%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(222.2 84% 4.9%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215.4 16.3% 46.9%);
+            --accent: hsl(210 40% 96%);
+            --accent-foreground: hsl(222.2 84% 4.9%);
+            --destructive: hsl(0 84.2% 60.2%);
+            --destructive-foreground: hsl(210 40% 98%);
+            --border: hsl(214.3 31.8% 91.4%);
+            --input: hsl(214.3 31.8% 91.4%);
+            --ring: hsl(221.2 83.2% 53.3%);
+            --radius: 8px;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .skill-rating {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .rating-option {
+            width: 40px;
+            height: 40px;
+            border: 2px solid hsl(var(--border));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .rating-option:hover {
+            border-color: hsl(var(--primary));
+            background-color: hsl(var(--primary) / 0.1);
+        }
+        
+        .rating-option.selected {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            border-color: hsl(var(--primary));
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+    <!-- @COMPONENT: PasswordEntry -->
+    <div id="password-screen" class="min-h-screen bg-gradient-to-br from-primary/10 to-accent flex items-center justify-center p-4">
+        <div class="bg-card rounded-lg shadow-xl p-8 w-full max-w-md border border-border">
+            <div class="text-center mb-8">
+                <div class="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-users text-primary text-2xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-foreground mb-2">RedEn Enterprise</h1>
+                <h2 class="text-lg font-semibold text-muted-foreground">Skill Matrix Platform</h2>
+                <p class="text-muted-foreground mt-2">Please enter the access password to continue</p>
+            </div>
+            
+            <form class="space-y-4" data-event="submit:handlePasswordSubmit">
+                <div>
+                    <label for="password" class="block text-sm font-medium text-foreground mb-2">Access Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                        placeholder="Enter password"
+                        data-bind="password"
+                    />
+                </div>
+                
+                <button 
+                    type="submit" 
+                    class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 px-4 rounded-md transition-colors"
+                    data-implementation="Validate password and show main dashboard"
+                >
+                    Access Platform
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: PasswordEntry -->
+
+    <!-- @COMPONENT: MainDashboard -->
+    <div id="main-dashboard" class="hidden">
+        <!-- Navigation Header -->
+        <header class="bg-card border-b border-border sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <div class="bg-primary/10 w-10 h-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-primary"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-semibold text-foreground">RedEn Skill Matrix</h1>
+                            <p class="text-xs text-muted-foreground">Enterprise Network Platform</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <button class="text-muted-foreground hover:text-foreground" data-event="click:showAdminPanel">
+                            <i class="fas fa-cog text-lg"></i>
+                        </button>
+                        <button class="text-muted-foreground hover:text-foreground" data-event="click:logout">
+                            <i class="fas fa-sign-out-alt text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Welcome Section -->
+            <div class="bg-card rounded-lg border border-border p-6 mb-8">
+                <h2 class="text-2xl font-bold text-foreground mb-2">Welcome to the RedEn Skill Matrix</h2>
+                <p class="text-muted-foreground mb-6">Connect, share, and discover skills within our enterprise network. Choose an option below to get started.</p>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Setup Skills Card -->
+                    <div class="bg-primary/5 border border-primary/20 rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" data-event="click:showSetupSkills">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-plus text-primary text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-foreground">Setup Skills</h3>
+                        </div>
+                        <p class="text-muted-foreground mb-4">Create your professional profile and share your expertise with the RedEn network community.</p>
+                        <div class="flex items-center text-primary font-medium">
+                            <span>Get Started</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- View Skills Card -->
+                    <div class="bg-secondary/50 border border-border rounded-lg p-6 hover:shadow-md transition-shadow cursor-pointer" data-event="click:showViewSkills">
+                        <div class="flex items-center mb-4">
+                            <div class="bg-secondary w-12 h-12 rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-search text-foreground text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-foreground">View Skills Database</h3>
+                        </div>
+                        <p class="text-muted-foreground mb-4">Browse and discover skills and expertise available within our enterprise network.</p>
+                        <div class="flex items-center text-foreground font-medium">
+                            <span>Explore Database</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-muted-foreground text-sm">Total Profiles</p>
+                            <p class="text-2xl font-bold text-foreground" data-bind="stats.totalProfiles">247</p>
+                        </div>
+                        <div class="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-users text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-muted-foreground text-sm">Pending Approval</p>
+                            <p class="text-2xl font-bold text-foreground" data-bind="stats.pendingApproval">12</p>
+                        </div>
+                        <div class="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-clock text-yellow-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-muted-foreground text-sm">Available Mentors</p>
+                            <p class="text-2xl font-bold text-foreground" data-bind="stats.availableMentors">89</p>
+                        </div>
+                        <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-handshake text-green-600"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: MainDashboard -->
+
+    <!-- @COMPONENT: SetupSkillsForm -->
+    <div id="setup-skills-screen" class="hidden">
+        <header class="bg-card border-b border-border sticky top-0 z-40">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <button class="text-muted-foreground hover:text-foreground" data-event="click:showMainDashboard">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Setup Your Skills Profile</h1>
+                    </div>
+                    <div class="text-sm text-muted-foreground">
+                        Step <span data-bind="currentStep">1</span> of <span data-bind="totalSteps">4</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <form class="space-y-8" data-event="submit:handleSkillsSubmit">
+                <!-- Personal Information Section -->
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <h2 class="text-xl font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-user text-primary mr-3"></i>
+                        Personal Information
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="fullName" class="block text-sm font-medium text-foreground mb-2">Full Name *</label>
+                            <input 
+                                type="text" 
+                                id="fullName" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                placeholder="Enter your full name"
+                                data-bind="form.fullName"
+                                required
+                            />
+                        </div>
+                        
+                        <div>
+                            <label for="stBasilMember" class="block text-sm font-medium text-foreground mb-2">Are you a member of St Basil's? *</label>
+                            <select 
+                                id="stBasilMember" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                data-bind="form.stBasilMember"
+                                required
+                            >
+                                <option value="">Select an option</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="occupation" class="block text-sm font-medium text-foreground mb-2">Current Occupation *</label>
+                            <input 
+                                type="text" 
+                                id="occupation" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                placeholder="What is your current job role or profession?"
+                                data-bind="form.occupation"
+                                required
+                            />
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="keySkills" class="block text-sm font-medium text-foreground mb-2">Key Skill Sets *</label>
+                            <textarea 
+                                id="keySkills" 
+                                rows="4"
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                placeholder="Describe your main areas of expertise and skills"
+                                data-bind="form.keySkills"
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label for="expertiseShare" class="block text-sm font-medium text-foreground mb-2">Areas of Expertise to Share</label>
+                            <textarea 
+                                id="expertiseShare" 
+                                rows="3"
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                placeholder="Is there anything that you are an expert in and would be willing to share/present to our RedEn Network?"
+                                data-bind="form.expertiseShare"
+                            ></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Assessment Section -->
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <h2 class="text-xl font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-chart-bar text-primary mr-3"></i>
+                        Skills Assessment
+                    </h2>
+                    <p class="text-muted-foreground mb-6">Rate yourself on a scale of 1-10 for each skill area:</p>
+                    
+                    <div class="space-y-6">
+                        <!-- @MAP: skillAreas.map(skill => ( -->
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Integrated Faith</h3>
+                                    <p class="text-sm text-muted-foreground">How well do you integrate your faith with your professional work?</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Self Leadership</h3>
+                                    <p class="text-sm text-muted-foreground">Your ability to lead yourself and manage personal development</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Culture, Team & Values</h3>
+                                    <p class="text-sm text-muted-foreground">Building and maintaining positive team culture and values</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Social Impact</h3>
+                                    <p class="text-sm text-muted-foreground">Creating positive social change and community impact</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Innovation & Imagination</h3>
+                                    <p class="text-sm text-muted-foreground">Creative thinking and innovative problem-solving abilities</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Strategy & Business Model</h3>
+                                    <p class="text-sm text-muted-foreground">Strategic planning and business model development</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Marketing & Sales</h3>
+                                    <p class="text-sm text-muted-foreground">Marketing strategies and sales expertise</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Operating Model</h3>
+                                    <p class="text-sm text-muted-foreground">Operational efficiency and process management</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h3 class="font-medium text-foreground">Fundraising & Governance</h3>
+                                    <p class="text-sm text-muted-foreground">Fundraising capabilities and governance expertise</p>
+                                </div>
+                                <div class="skill-rating">
+                                    <span class="text-sm text-muted-foreground mr-2">1</span>
+                                    <div class="rating-option" data-value="1">1</div>
+                                    <div class="rating-option" data-value="2">2</div>
+                                    <div class="rating-option" data-value="3">3</div>
+                                    <div class="rating-option" data-value="4">4</div>
+                                    <div class="rating-option" data-value="5">5</div>
+                                    <div class="rating-option" data-value="6">6</div>
+                                    <div class="rating-option" data-value="7">7</div>
+                                    <div class="rating-option" data-value="8">8</div>
+                                    <div class="rating-option" data-value="9">9</div>
+                                    <div class="rating-option" data-value="10">10</div>
+                                    <span class="text-sm text-muted-foreground ml-2">10</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Availability & Contact Section -->
+                <div class="bg-card rounded-lg border border-border p-6">
+                    <h2 class="text-xl font-semibold text-foreground mb-6 flex items-center">
+                        <i class="fas fa-calendar-check text-primary mr-3"></i>
+                        Availability & Contact
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label for="contactMethod" class="block text-sm font-medium text-foreground mb-2">Preferred Method of Contact *</label>
+                            <select 
+                                id="contactMethod" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                data-bind="form.contactMethod"
+                                required
+                            >
+                                <option value="">Select preferred contact method</option>
+                                <option value="email">Email</option>
+                                <option value="phone">Phone</option>
+                                <option value="linkedin">LinkedIn</option>
+                                <option value="teams">Microsoft Teams</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="availableHours" class="block text-sm font-medium text-foreground mb-2">Weekly Availability</label>
+                            <select 
+                                id="availableHours" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                data-bind="form.availableHours"
+                            >
+                                <option value="">How many hours per week are you available to share your skills?</option>
+                                <option value="0">Not available at this time</option>
+                                <option value="1-2">1-2 hours per week</option>
+                                <option value="3-5">3-5 hours per week</option>
+                                <option value="6-10">6-10 hours per week</option>
+                                <option value="10+">More than 10 hours per week</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-foreground mb-2">Email Address *</label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                    placeholder="your.email@example.com"
+                                    data-bind="form.email"
+                                    required
+                                />
+                            </div>
+                            
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-foreground mb-2">Phone Number</label>
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                    placeholder="+1 (555) 123-4567"
+                                    data-bind="form.phone"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label for="linkedin" class="block text-sm font-medium text-foreground mb-2">LinkedIn Profile</label>
+                            <input 
+                                type="url" 
+                                id="linkedin" 
+                                class="w-full px-4 py-3 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                                placeholder="https://linkedin.com/in/yourprofile"
+                                data-bind="form.linkedin"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex justify-between items-center pt-6">
+                    <button 
+                        type="button" 
+                        class="px-6 py-3 border border-border text-foreground rounded-md hover:bg-accent transition-colors"
+                        data-event="click:showMainDashboard"
+                    >
+                        Cancel
+                    </button>
+                    
+                    <button 
+                        type="submit" 
+                        class="px-8 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-md transition-colors"
+                        data-implementation="Submit form and send email to admin"
+                    >
+                        Submit for Review
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: SetupSkillsForm -->
+
+    <!-- @COMPONENT: ViewSkillsDatabase -->
+    <div id="view-skills-screen" class="hidden">
+        <header class="bg-card border-b border-border sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <button class="text-muted-foreground hover:text-foreground" data-event="click:showMainDashboard">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Skills Database</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button class="px-4 py-2 text-sm bg-secondary hover:bg-secondary/80 text-secondary-foreground rounded-md transition-colors" data-event="click:exportData">
+                            <i class="fas fa-download mr-2"></i>
+                            Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Search and Filters -->
+            <div class="bg-card rounded-lg border border-border p-6 mb-8">
+                <div class="grid md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="searchName" class="block text-sm font-medium text-foreground mb-2">Search by Name</label>
+                        <input 
+                            type="text" 
+                            id="searchName" 
+                            class="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                            placeholder="Enter name..."
+                            data-bind="filters.name"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label for="filterSkill" class="block text-sm font-medium text-foreground mb-2">Filter by Skill</label>
+                        <select 
+                            id="filterSkill" 
+                            class="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                            data-bind="filters.skill"
+                        >
+                            <option value="">All Skills</option>
+                            <option value="strategy">Strategy & Business Model</option>
+                            <option value="marketing">Marketing & Sales</option>
+                            <option value="innovation">Innovation & Imagination</option>
+                            <option value="leadership">Self Leadership</option>
+                            <option value="operations">Operating Model</option>
+                            <option value="fundraising">Fundraising & Governance</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="filterAvailability" class="block text-sm font-medium text-foreground mb-2">Availability</label>
+                        <select 
+                            id="filterAvailability" 
+                            class="w-full px-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                            data-bind="filters.availability"
+                        >
+                            <option value="">All</option>
+                            <option value="available">Available</option>
+                            <option value="limited">Limited Availability</option>
+                            <option value="unavailable">Not Available</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <button 
+                            class="w-full px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors"
+                            data-event="click:applyFilters"
+                        >
+                            <i class="fas fa-search mr-2"></i>
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- @MAP: approvedProfiles.map(profile => ( -->
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                <span class="text-primary font-semibold" data-bind="profile.initials">JS</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-foreground" data-bind="profile.name">John Smith</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Senior Product Manager</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Top Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Strategy (9/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Leadership (8/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Innovation (7/10)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-1">Expertise to Share</h4>
+                        <p class="text-sm text-muted-foreground" data-bind="profile.expertise" data-mock="true">Product strategy, team leadership, and digital transformation methodologies</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-muted-foreground">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span data-bind="profile.availability" data-mock="true">3-5 hrs/week</span>
+                        </div>
+                        <button 
+                            class="px-3 py-1 text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors"
+                            data-event="click:contactPerson"
+                        >
+                            Contact
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                <span class="text-primary font-semibold" data-bind="profile.initials">MJ</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-foreground" data-bind="profile.name">Maria Johnson</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Marketing Director</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Limited</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Top Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Marketing (10/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Sales (9/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Social Impact (8/10)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-1">Expertise to Share</h4>
+                        <p class="text-sm text-muted-foreground" data-bind="profile.expertise" data-mock="true">Digital marketing strategies, brand development, and social media campaigns</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-muted-foreground">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span data-bind="profile.availability" data-mock="true">1-2 hrs/week</span>
+                        </div>
+                        <button 
+                            class="px-3 py-1 text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors"
+                            data-event="click:contactPerson"
+                        >
+                            Contact
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                                <span class="text-primary font-semibold" data-bind="profile.initials">DC</span>
+                            </div>
+                            <div>
+                                <h3 class="font-semibold text-foreground" data-bind="profile.name">David Chen</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Financial Advisor</p>
+                            </div>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Available</span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Top Skills</h4>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Fundraising (9/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Governance (8/10)</span>
+                            <span class="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full" data-mock="true">Strategy (7/10)</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-1">Expertise to Share</h4>
+                        <p class="text-sm text-muted-foreground" data-bind="profile.expertise" data-mock="true">Financial planning, investment strategies, and organizational governance</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-muted-foreground">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span data-bind="profile.availability" data-mock="true">6-10 hrs/week</span>
+                        </div>
+                        <button 
+                            class="px-3 py-1 text-sm bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors"
+                            data-event="click:contactPerson"
+                        >
+                            Contact
+                        </button>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="flex justify-center items-center space-x-4 mt-8">
+                <button class="px-4 py-2 border border-border rounded-md hover:bg-accent transition-colors" data-event="click:previousPage">
+                    <i class="fas fa-chevron-left mr-2"></i>
+                    Previous
+                </button>
+                
+                <div class="flex space-x-2">
+                    <button class="w-10 h-10 bg-primary text-primary-foreground rounded-md" data-mock="true">1</button>
+                    <button class="w-10 h-10 border border-border rounded-md hover:bg-accent transition-colors" data-mock="true">2</button>
+                    <button class="w-10 h-10 border border-border rounded-md hover:bg-accent transition-colors" data-mock="true">3</button>
+                </div>
+                
+                <button class="px-4 py-2 border border-border rounded-md hover:bg-accent transition-colors" data-event="click:nextPage">
+                    Next
+                    <i class="fas fa-chevron-right ml-2"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: ViewSkillsDatabase -->
+
+    <!-- @COMPONENT: AdminPanel -->
+    <div id="admin-panel" class="hidden">
+        <header class="bg-card border-b border-border sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <button class="text-muted-foreground hover:text-foreground" data-event="click:showMainDashboard">
+                            <i class="fas fa-arrow-left text-lg"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Admin Panel</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm rounded-full">
+                            <span data-bind="pendingCount">12</span> Pending Approval
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Pending Approvals -->
+            <div class="bg-card rounded-lg border border-border p-6">
+                <h2 class="text-xl font-semibold text-foreground mb-6">Pending Profile Approvals</h2>
+                
+                <div class="space-y-4">
+                    <!-- @MAP: pendingProfiles.map(profile => ( -->
+                    <div class="border border-border rounded-lg p-4" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-foreground" data-bind="profile.name">Sarah Williams</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">UX Designer</p>
+                                <p class="text-xs text-muted-foreground" data-bind="profile.submittedDate">Submitted 2 days ago</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button 
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
+                                    data-event="click:approveProfile"
+                                    data-implementation="Send approval email and update database status"
+                                >
+                                    <i class="fas fa-check mr-2"></i>
+                                    Approve
+                                </button>
+                                <button 
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
+                                    data-event="click:rejectProfile"
+                                    data-implementation="Send rejection email with feedback"
+                                >
+                                    <i class="fas fa-times mr-2"></i>
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Key Skills</h4>
+                                <p class="text-muted-foreground" data-bind="profile.keySkills" data-mock="true">User experience design, prototyping, user research, design systems</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Expertise to Share</h4>
+                                <p class="text-muted-foreground" data-bind="profile.expertise" data-mock="true">UX workshops, design thinking sessions, user research methodologies</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Availability</h4>
+                                <p class="text-muted-foreground" data-bind="profile.availability" data-mock="true">3-5 hours per week</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Contact</h4>
+                                <p class="text-muted-foreground" data-bind="profile.email" data-mock="true">sarah.williams@email.com</p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            class="mt-3 text-primary hover:text-primary/80 text-sm"
+                            data-event="click:viewFullProfile"
+                        >
+                            View Full Profile Details
+                        </button>
+                    </div>
+                    
+                    <div class="border border-border rounded-lg p-4" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-semibold text-foreground" data-bind="profile.name">Michael Thompson</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Operations Manager</p>
+                                <p class="text-xs text-muted-foreground" data-bind="profile.submittedDate">Submitted 1 day ago</p>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button 
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors"
+                                    data-event="click:approveProfile"
+                                >
+                                    <i class="fas fa-check mr-2"></i>
+                                    Approve
+                                </button>
+                                <button 
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors"
+                                    data-event="click:rejectProfile"
+                                >
+                                    <i class="fas fa-times mr-2"></i>
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Key Skills</h4>
+                                <p class="text-muted-foreground" data-bind="profile.keySkills" data-mock="true">Operations optimization, process improvement, team management, supply chain</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Expertise to Share</h4>
+                                <p class="text-muted-foreground" data-bind="profile.expertise" data-mock="true">Lean operations, process mapping, efficiency consulting</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Availability</h4>
+                                <p class="text-muted-foreground" data-bind="profile.availability" data-mock="true">6-10 hours per week</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-foreground mb-1">Contact</h4>
+                                <p class="text-muted-foreground" data-bind="profile.email" data-mock="true">m.thompson@email.com</p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            class="mt-3 text-primary hover:text-primary/80 text-sm"
+                            data-event="click:viewFullProfile"
+                        >
+                            View Full Profile Details
+                        </button>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- @END_COMPONENT: AdminPanel -->
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-card rounded-lg p-6 w-full max-w-md border border-border">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-foreground">Contact Information</h3>
+                <button class="text-muted-foreground hover:text-foreground" data-event="click:closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-3 text-sm">
+                <div>
+                    <span class="font-medium text-foreground">Email:</span>
+                    <span class="text-muted-foreground ml-2" data-bind="contact.email" data-mock="true">john.smith@email.com</span>
+                </div>
+                <div>
+                    <span class="font-medium text-foreground">Phone:</span>
+                    <span class="text-muted-foreground ml-2" data-bind="contact.phone" data-mock="true">+1 (555) 123-4567</span>
+                </div>
+                <div>
+                    <span class="font-medium text-foreground">LinkedIn:</span>
+                    <a href="#" class="text-primary hover:text-primary/80 ml-2" data-bind="contact.linkedin" data-mock="true">linkedin.com/in/johnsmith</a>
+                </div>
+                <div>
+                    <span class="font-medium text-foreground">Preferred Contact:</span>
+                    <span class="text-muted-foreground ml-2" data-bind="contact.preferred" data-mock="true">Email</span>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3 mt-6">
+                <button 
+                    class="px-4 py-2 border border-border text-foreground rounded-md hover:bg-accent transition-colors"
+                    data-event="click:closeModal"
+                >
+                    Close
+                </button>
+                <button 
+                    class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors"
+                    data-event="click:sendMessage"
+                    data-implementation="Open email client or messaging system"
+                >
+                    Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TODO: Replace with actual authentication and navigation logic
+        (function() {
+            let currentScreen = 'password';
+            
+            // Screen navigation functions
+            function showScreen(screenId) {
+                // Hide all screens
+                document.querySelectorAll('[id$="-screen"], #main-dashboard, #admin-panel').forEach(screen => {
+                    screen.classList.add('hidden');
+                });
+                
+                // Show requested screen
+                const screen = document.getElementById(screenId);
+                if (screen) {
+                    screen.classList.remove('hidden');
+                    currentScreen = screenId.replace('-screen', '').replace('main-dashboard', 'dashboard');
+                }
+            }
+            
+            // Rating system for skills assessment
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('rating-option')) {
+                    const ratingGroup = e.target.parentElement;
+                    const value = e.target.dataset.value;
+                    
+                    // Clear previous selections in this group
+                    ratingGroup.querySelectorAll('.rating-option').forEach(option => {
+                        option.classList.remove('selected');
+                    });
+                    
+                    // Select clicked option and all preceding options
+                    const options = Array.from(ratingGroup.querySelectorAll('.rating-option'));
+                    const clickedIndex = options.indexOf(e.target);
+                    
+                    for (let i = 0; i <= clickedIndex; i++) {
+                        options[i].classList.add('selected');
+                    }
+                }
+            });
+            
+            // Navigation event handlers
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('[data-event]');
+                if (!target) return;
+                
+                const event = target.dataset.event;
+                
+                switch(event) {
+                    case 'submit:handlePasswordSubmit':
+                        e.preventDefault();
+                        // TODO: Validate password
+                        showScreen('main-dashboard');
+                        break;
+                        
+                    case 'click:showSetupSkills':
+                        showScreen('setup-skills-screen');
+                        break;
+                        
+                    case 'click:showViewSkills':
+                        showScreen('view-skills-screen');
+                        break;
+                        
+                    case 'click:showMainDashboard':
+                        showScreen('main-dashboard');
+                        break;
+                        
+                    case 'click:showAdminPanel':
+                        showScreen('admin-panel');
+                        break;
+                        
+                    case 'click:logout':
+                        showScreen('password-screen');
+                        break;
+                        
+                    case 'submit:handleSkillsSubmit':
+                        e.preventDefault();
+                        // TODO: Submit form data and send admin notification
+                        alert('Profile submitted for review! You will receive an email confirmation shortly.');
+                        showScreen('main-dashboard');
+                        break;
+                        
+                    case 'click:contactPerson':
+                        document.getElementById('contact-modal').classList.remove('hidden');
+                        break;
+                        
+                    case 'click:closeModal':
+                        document.getElementById('contact-modal').classList.add('hidden');
+                        break;
+                        
+                    case 'click:approveProfile':
+                        // TODO: Implement approval logic
+                        alert('Profile approved successfully!');
+                        break;
+                        
+                    case 'click:rejectProfile':
+                        // TODO: Implement rejection logic with feedback
+                        alert('Profile rejected. Feedback email will be sent to the user.');
+                        break;
+                }
+            });
+            
+            // Initialize the application
+            showScreen('password-screen');
+        })();
+    </script>
+</body>
+</html>

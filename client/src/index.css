@@ -1,0 +1,193 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 98%);
+  --foreground: hsl(0, 0%, 0%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(0, 0%, 0%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(0, 0%, 0%);
+  --primary: hsl(0, 0%, 0%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(0, 0%, 60%);
+  --secondary-foreground: hsl(0, 0%, 0%);
+  --muted: hsl(0, 0%, 96%);
+  --muted-foreground: hsl(0, 0%, 40%);
+  --accent: hsl(0, 0%, 96%);
+  --accent-foreground: hsl(0, 0%, 0%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 90%);
+  --input: hsl(0, 0%, 95%);
+  --ring: hsl(0, 0%, 0%);
+  --trust: hsl(200, 30%, 60%);
+  --growth: hsl(100, 30%, 60%);
+  --community: hsl(15, 70%, 65%);
+  --radius: 8px;
+  --font-brandon: 'Open Sans', sans-serif;
+  --font-caslon: 'Source Serif 4', serif;
+  --font-sans: 'Open Sans', sans-serif;
+  --font-serif: 'Source Serif 4', serif;
+  --font-mono: 'Fira Code', monospace;
+}
+
+.dark {
+  --background: hsl(0, 0%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(0, 0%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(0, 0%, 98%);
+  --primary-foreground: hsl(0, 0%, 9%);
+  --secondary: hsl(0, 0%, 14.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 14.9%);
+  --muted-foreground: hsl(0, 0%, 63.9%);
+  --accent: hsl(0, 0%, 14.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 14.9%);
+  --input: hsl(0, 0%, 14.9%);
+  --ring: hsl(0, 0%, 83.1%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    /* Prevent horizontal scroll and ensure proper mobile rendering */
+    overflow-x: hidden;
+    /* Use safe viewport height for better mobile support */
+    min-height: 100vh;
+    min-height: 100svh;
+  }
+  
+  /* Mobile-first responsive typography */
+  h1 {
+    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+  }
+  
+  h2 {
+    @apply text-lg sm:text-xl md:text-2xl lg:text-3xl;
+  }
+  
+  h3 {
+    @apply text-base sm:text-lg md:text-xl lg:text-2xl;
+  }
+  
+  /* Ensure all inputs meet minimum touch target size (44px) */
+  input, button, select, textarea {
+    min-height: 2.75rem; /* 44px */
+    /* Prevent iOS zoom on form inputs */
+    font-size: 16px;
+  }
+  
+  /* Responsive container utility */
+  .responsive-container {
+    @apply w-full max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .font-brandon {
+    font-family: var(--font-brandon);
+  }
+  
+  .font-caslon {
+    font-family: var(--font-caslon);
+  }
+}
+
+@layer components {
+  .star-rating {
+    @apply flex gap-1 sm:gap-2;
+  }
+
+  .star {
+    @apply cursor-pointer text-gray-300 transition-colors hover:text-yellow-400 text-lg;
+    /* Ensure stars are touch-friendly */
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    @apply flex items-center justify-center;
+  }
+
+  .star.filled {
+    @apply text-yellow-400;
+  }
+
+  .nav-btn {
+    @apply text-muted-foreground hover:text-foreground hover:bg-accent transition-colors;
+    /* Ensure navigation buttons are touch-friendly */
+    min-height: 2.75rem;
+    @apply px-3 py-2;
+  }
+
+  .nav-btn.active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  .skill-card {
+    @apply bg-card border border-border rounded-lg p-4 sm:p-6 hover:shadow-md transition-shadow;
+    /* Ensure cards are responsive */
+    @apply w-full;
+  }
+
+  .skill-assessment {
+    @apply space-y-2 sm:space-y-3;
+  }
+
+  /* Responsive form layouts */
+  .form-grid-responsive {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  /* Mobile-first form label alignment */
+  .form-label-fixed {
+    @apply block mb-2;
+  }
+
+  /* Responsive modal/dialog sizing */
+  .dialog-responsive {
+    @apply w-[calc(100vw-2rem)] max-w-4xl max-h-[85vh] sm:max-h-[80vh];
+  }
+
+  /* Mobile table wrapper */
+  .table-responsive {
+    @apply -mx-4 overflow-x-auto sm:mx-0 sm:rounded-lg;
+  }
+
+  /* Responsive grid layouts */
+  .grid-responsive-cards {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+  }
+}
+
+@media (min-width: 768px) {
+  .form-label-fixed {
+    @apply flex items-end;
+    min-height: 3.5rem;
+  }
+  
+  /* Desktop-specific input sizing */
+  input, button, select, textarea {
+    font-size: 14px;
+  }
+}
+
+/* Handle safe area for iOS devices */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+}

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St Basil's RedEn Skill Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                    success: "var(--success)",
+                    warning: "var(--warning)",
+                },
+                fontFamily: {
+                    sans: ["var(--font-sans)"],
+                    serif: ["var(--font-serif)"],
+                }
+            },
+        }
+    };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --background: hsl(0 0% 100%);
+            --foreground: hsl(0 0% 0%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(0 0% 0%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(0 0% 0%);
+            --primary: hsl(0 0% 0%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(0 0% 60%);
+            --secondary-foreground: hsl(0 0% 0%);
+            --muted: hsl(0 0% 97%);
+            --muted-foreground: hsl(0 0% 40%);
+            --accent: hsl(25 70% 60%);
+            --accent-foreground: hsl(0 0% 100%);
+            --destructive: hsl(0 70% 50%);
+            --destructive-foreground: hsl(0 0% 100%);
+            --border: hsl(0 0% 90%);
+            --input: hsl(0 0% 97%);
+            --ring: hsl(0 0% 0%);
+            --success: hsl(120 60% 45%);
+            --warning: hsl(35 90% 55%);
+            --radius: 0.5rem;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-serif: 'Times New Roman', Times, serif;
+        }
+        
+        body {
+            font-family: var(--font-sans);
+        }
+        
+        .font-brand-light {
+            font-weight: 300;
+        }
+        
+        .font-brand-medium {
+            font-weight: 500;
+        }
+        
+        .font-brand-header {
+            font-family: var(--font-serif);
+            font-weight: 700;
+        }
+        
+        .rating-star {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .rating-star:hover,
+        .rating-star.active {
+            color: var(--accent);
+        }
+        
+        .step-indicator {
+            position: relative;
+        }
+        
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 100px;
+            height: 2px;
+            background: var(--border);
+            transform: translateY(-50%);
+        }
+        
+        .step-indicator:last-child::after {
+            display: none;
+        }
+        
+        .step-indicator.completed {
+            background: var(--success);
+            color: white;
+        }
+        
+        .step-indicator.completed::after {
+            background: var(--success);
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+    <!-- @COMPONENT: AppContainer -->
+    <div id="app-container" class="min-h-screen">
+        
+        <!-- Login Screen -->
+        <!-- @COMPONENT: LoginScreen -->
+        <div id="login-screen" class="flex items-center justify-center min-h-screen bg-muted">
+            <div class="w-full max-w-md p-8 bg-card rounded-lg shadow-lg border border-border">
+                <div class="text-center mb-8">
+                    <h1 class="font-brand-header text-3xl mb-2">St Basil's</h1>
+                    <h2 class="font-brand-medium text-xl text-muted-foreground">RedEn Skill Matrix</h2>
+                    <p class="text-sm text-muted-foreground mt-2 font-brand-light">Following the way of Jesus, together, for the renewal of the region.</p>
+                </div>
+                
+                <form class="space-y-6" data-implementation="Handle password authentication">
+                    <div>
+                        <label for="password" class="block text-sm font-brand-medium text-foreground mb-2">
+                            Access Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent font-brand-light"
+                            placeholder="Enter community password"
+                            data-mock="true"
+                        >
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="w-full bg-primary text-primary-foreground py-3 rounded-md font-brand-medium hover:opacity-90 transition-opacity"
+                        data-event="click:handleLogin"
+                    >
+                        Enter Community Portal
+                    </button>
+                </form>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: LoginScreen -->
+        
+        <!-- Main Dashboard -->
+        <!-- @COMPONENT: MainDashboard -->
+        <div id="main-dashboard" class="hidden min-h-screen">
+            <header class="bg-card border-b border-border shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center py-6">
+                        <div>
+                            <h1 class="font-brand-header text-2xl">St Basil's RedEn Network</h1>
+                            <p class="text-muted-foreground font-brand-light">Redemptive Enterprise Skill Matrix</p>
+                        </div>
+                        <button 
+                            class="text-muted-foreground hover:text-foreground font-brand-light"
+                            data-event="click:handleLogout"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h2 class="font-brand-header text-3xl mb-4">Welcome to the Community</h2>
+                    <p class="text-lg text-muted-foreground font-brand-light max-w-2xl mx-auto">
+                        Connect, share, and grow together through our skill-sharing network. Choose how you'd like to participate in our redemptive enterprise community.
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- Setup Skills Card -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-8 hover:shadow-xl transition-shadow">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-user-plus text-2xl text-accent-foreground"></i>
+                            </div>
+                            <h3 class="font-brand-medium text-2xl mb-4">Setup Your Skills</h3>
+                            <p class="text-muted-foreground font-brand-light mb-8">
+                                Share your expertise, experience, and availability with the St Basil's community. Help others discover your unique gifts and talents.
+                            </p>
+                            <button 
+                                class="w-full bg-accent text-accent-foreground py-3 px-6 rounded-md font-brand-medium hover:opacity-90 transition-opacity"
+                                data-event="click:showSkillsSetup"
+                            >
+                                Begin Skills Assessment
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- View Skills Card -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-8 hover:shadow-xl transition-shadow">
+                        <div class="text-center">
+                            <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-search text-2xl text-primary-foreground"></i>
+                            </div>
+                            <h3 class="font-brand-medium text-2xl mb-4">Explore Community Skills</h3>
+                            <p class="text-muted-foreground font-brand-light mb-8">
+                                Discover the talents and expertise within our community. Connect with others who share your interests or can help with your ventures.
+                            </p>
+                            <button 
+                                class="w-full bg-primary text-primary-foreground py-3 px-6 rounded-md font-brand-medium hover:opacity-90 transition-opacity"
+                                data-event="click:showSkillsDatabase"
+                            >
+                                Browse Skills Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Admin Access -->
+                <div class="text-center mt-12" data-bind="user.isAdmin">
+                    <button 
+                        class="text-muted-foreground hover:text-foreground font-brand-light text-sm border border-border px-4 py-2 rounded-md"
+                        data-event="click:showAdminPanel"
+                    >
+                        <i class="fas fa-cog mr-2"></i>Admin Panel
+                    </button>
+                </div>
+            </main>
+        </div>
+        <!-- @END_COMPONENT: MainDashboard -->
+        
+        <!-- Skills Setup Form -->
+        <!-- @COMPONENT: SkillsSetupForm -->
+        <div id="skills-setup" class="hidden min-h-screen bg-muted">
+            <header class="bg-card border-b border-border shadow-sm">
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center py-6">
+                        <div>
+                            <h1 class="font-brand-header text-xl">Skills Assessment</h1>
+                            <p class="text-muted-foreground font-brand-light">Share your expertise with the community</p>
+                        </div>
+                        <button 
+                            class="text-muted-foreground hover:text-foreground font-brand-light"
+                            data-event="click:backToDashboard"
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Progress Indicator -->
+                <div class="flex justify-between items-center mb-8">
+                    <div class="flex items-center space-x-4">
+                        <div class="step-indicator completed w-8 h-8 rounded-full bg-success text-white flex items-center justify-center text-sm font-brand-medium">1</div>
+                        <div class="step-indicator w-8 h-8 rounded-full bg-border text-muted-foreground flex items-center justify-center text-sm font-brand-medium">2</div>
+                        <div class="step-indicator w-8 h-8 rounded-full bg-border text-muted-foreground flex items-center justify-center text-sm font-brand-medium">3</div>
+                    </div>
+                    <span class="text-sm text-muted-foreground font-brand-light">Step 1 of 3</span>
+                </div>
+                
+                <form class="space-y-8" data-implementation="Handle multi-step form submission and validation">
+                    <!-- Personal Information -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-8">
+                        <h2 class="font-brand-medium text-2xl mb-6">Personal Information</h2>
+                        
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Full Name *</label>
+                                <input 
+                                    type="text" 
+                                    class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                    placeholder="Enter your full name"
+                                    data-mock="true"
+                                >
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Email Address *</label>
+                                <input 
+                                    type="email" 
+                                    class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                    placeholder="your.email@example.com"
+                                    data-mock="true"
+                                >
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Are you a member of St Basil's? *</label>
+                            <div class="flex space-x-6">
+                                <label class="flex items-center">
+                                    <input type="radio" name="member" value="yes" class="mr-2" data-mock="true">
+                                    <span class="font-brand-light">Yes, I am a member</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="member" value="no" class="mr-2" data-mock="true">
+                                    <span class="font-brand-light">No, but interested in community</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Current Occupation *</label>
+                            <input 
+                                type="text" 
+                                class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                placeholder="e.g., Software Developer, Teacher, Entrepreneur"
+                                data-mock="true"
+                            >
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Key Skill Sets *</label>
+                            <textarea 
+                                rows="4" 
+                                class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                placeholder="Describe your main areas of expertise, skills, and experience..."
+                                data-mock="true"
+                            ></textarea>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Areas of Expertise You Could Share</label>
+                            <textarea 
+                                rows="3" 
+                                class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                placeholder="What topics could you present or teach to our RedEn Network?"
+                                data-mock="true"
+                            ></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Skills Assessment -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-8">
+                        <h2 class="font-brand-medium text-2xl mb-6">Skills Assessment</h2>
+                        <p class="text-muted-foreground font-brand-light mb-8">Rate yourself in the following areas (1 = Beginner, 5 = Expert):</p>
+                        
+                        <div class="space-y-8">
+                            <!-- @MAP: skillAreas.map(area => ( -->
+                            <div class="border-b border-border pb-6 last:border-b-0 last:pb-0">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Integrated Faith</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">How well do you integrate Christian values into your work and business practices?</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Self Leadership</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Your ability to lead yourself, manage time, and maintain personal discipline.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Culture, Team & Values</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Building positive team culture and aligning values in organizational settings.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Social Impact</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Creating positive change in communities and measuring social outcomes.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Innovation & Imagination</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Developing creative solutions and thinking outside conventional boundaries.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Strategy & Business Model</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Developing business strategies and sustainable organizational models.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Marketing & Sales</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Promoting products/services and building customer relationships ethically.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="border-b border-border pb-6">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Operating Model</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Managing day-to-day operations, processes, and organizational efficiency.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="font-brand-medium text-lg" data-mock="true">Fundraising & Governance</h3>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-mock="true">Securing funding and establishing proper organizational governance structures.</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <span class="rating-star text-2xl text-border" data-rating="1">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="2">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="3">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="4">★</span>
+                                        <span class="rating-star text-2xl text-border" data-rating="5">★</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                    
+                    <!-- Availability & Contact -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-8">
+                        <h2 class="font-brand-medium text-2xl mb-6">Availability & Contact</h2>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Preferred Contact Method *</label>
+                                <select class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light" data-mock="true">
+                                    <option value="">Select contact method</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="in-person">In-person meetings</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Phone Number</label>
+                                <input 
+                                    type="tel" 
+                                    class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                    placeholder="+44 7XXX XXX XXX"
+                                    data-mock="true"
+                                >
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Time Availability *</label>
+                                <div class="space-y-3">
+                                    <label class="flex items-center">
+                                        <input type="radio" name="availability" value="1-2" class="mr-3" data-mock="true">
+                                        <span class="font-brand-light">1-2 hours per week</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="availability" value="3-5" class="mr-3" data-mock="true">
+                                        <span class="font-brand-light">3-5 hours per week</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="availability" value="6-10" class="mr-3" data-mock="true">
+                                        <span class="font-brand-light">6-10 hours per week</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="availability" value="flexible" class="mr-3" data-mock="true">
+                                        <span class="font-brand-light">Flexible - project dependent</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="radio" name="availability" value="none" class="mr-3" data-mock="true">
+                                        <span class="font-brand-light">No regular availability, but open to occasional consultation</span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-brand-medium text-foreground mb-2">Additional Notes</label>
+                                <textarea 
+                                    rows="3" 
+                                    class="w-full px-4 py-3 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                    placeholder="Any additional information about your availability, specific interests, or how you'd like to contribute..."
+                                    data-mock="true"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center pt-8">
+                        <button 
+                            type="button" 
+                            class="px-6 py-3 border border-border text-muted-foreground rounded-md font-brand-medium hover:bg-muted transition-colors"
+                            data-event="click:backToDashboard"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-8 py-3 bg-accent text-accent-foreground rounded-md font-brand-medium hover:opacity-90 transition-opacity"
+                            data-event="click:submitSkillsForm"
+                        >
+                            Submit for Approval
+                        </button>
+                    </div>
+                </form>
+            </main>
+        </div>
+        <!-- @END_COMPONENT: SkillsSetupForm -->
+        
+        <!-- Skills Database View -->
+        <!-- @COMPONENT: SkillsDatabase -->
+        <div id="skills-database" class="hidden min-h-screen">
+            <header class="bg-card border-b border-border shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center py-6">
+                        <div>
+                            <h1 class="font-brand-header text-xl">Community Skills Database</h1>
+                            <p class="text-muted-foreground font-brand-light">Discover expertise within our RedEn Network</p>
+                        </div>
+                        <button 
+                            class="text-muted-foreground hover:text-foreground font-brand-light"
+                            data-event="click:backToDashboard"
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Search and Filters -->
+                <div class="bg-card rounded-lg shadow-lg border border-border p-6 mb-8">
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Search by Name or Skill</label>
+                            <input 
+                                type="text" 
+                                class="w-full px-4 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light"
+                                placeholder="Search..."
+                                data-mock="true"
+                            >
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Filter by Skill Area</label>
+                            <select class="w-full px-4 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light" data-mock="true">
+                                <option value="">All Skills</option>
+                                <option value="integrated-faith">Integrated Faith</option>
+                                <option value="leadership">Self Leadership</option>
+                                <option value="culture">Culture & Values</option>
+                                <option value="social-impact">Social Impact</option>
+                                <option value="innovation">Innovation</option>
+                                <option value="strategy">Strategy</option>
+                                <option value="marketing">Marketing & Sales</option>
+                                <option value="operations">Operating Model</option>
+                                <option value="fundraising">Fundraising</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-brand-medium text-foreground mb-2">Availability</label>
+                            <select class="w-full px-4 py-2 bg-input border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-ring font-brand-light" data-mock="true">
+                                <option value="">Any Availability</option>
+                                <option value="1-2">1-2 hours/week</option>
+                                <option value="3-5">3-5 hours/week</option>
+                                <option value="6-10">6+ hours/week</option>
+                                <option value="flexible">Flexible</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Community Member Cards -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: approvedProfiles.map(profile => ( -->
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-6 hover:shadow-xl transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brand-medium text-lg" data-bind="profile.name">Sarah Johnson</h3>
+                                <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.occupation">Social Entrepreneur</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="w-2 h-2 bg-success rounded-full mr-2"></span>
+                                    <span class="text-xs text-success font-brand-light" data-bind="profile.memberStatus">St Basil's Member</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-muted-foreground font-brand-light" data-bind="profile.availability">3-5 hrs/week</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Top Skills</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Social Impact ★★★★★</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Strategy ★★★★☆</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Innovation ★★★★☆</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Can Share</h4>
+                            <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.expertise">Community development strategies, impact measurement, sustainable business models</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-muted-foreground font-brand-light">
+                                <i class="fas fa-envelope mr-1"></i><span data-bind="profile.contactMethod">Email preferred</span>
+                            </span>
+                            <button 
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-brand-medium hover:opacity-90 transition-opacity"
+                                data-event="click:contactMember"
+                                data-member-id="profile.id"
+                            >
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-6 hover:shadow-xl transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brand-medium text-lg" data-bind="profile.name">David Chen</h3>
+                                <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.occupation">Tech Consultant</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="w-2 h-2 bg-warning rounded-full mr-2"></span>
+                                    <span class="text-xs text-warning font-brand-light" data-bind="profile.memberStatus">Community Friend</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-muted-foreground font-brand-light" data-bind="profile.availability">Flexible</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Top Skills</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Innovation ★★★★★</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Operations ★★★★★</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Strategy ★★★★☆</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Can Share</h4>
+                            <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.expertise">Digital transformation, process optimization, technology strategy for nonprofits</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-muted-foreground font-brand-light">
+                                <i class="fas fa-phone mr-1"></i><span data-bind="profile.contactMethod">Phone/WhatsApp</span>
+                            </span>
+                            <button 
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-brand-medium hover:opacity-90 transition-opacity"
+                                data-event="click:contactMember"
+                                data-member-id="profile.id"
+                            >
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card rounded-lg shadow-lg border border-border p-6 hover:shadow-xl transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brand-medium text-lg" data-bind="profile.name">Emma Williams</h3>
+                                <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.occupation">Marketing Director</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="w-2 h-2 bg-success rounded-full mr-2"></span>
+                                    <span class="text-xs text-success font-brand-light" data-bind="profile.memberStatus">St Basil's Member</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs text-muted-foreground font-brand-light" data-bind="profile.availability">1-2 hrs/week</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Top Skills</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Marketing ★★★★★</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Culture ★★★★☆</span>
+                                <span class="px-2 py-1 bg-accent/10 text-accent text-xs rounded-full font-brand-light" data-mock="true">Leadership ★★★★☆</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h4 class="text-sm font-brand-medium mb-2">Can Share</h4>
+                            <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.expertise">Brand development, ethical marketing, team leadership in Christian organizations</p>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-muted-foreground font-brand-light">
+                                <i class="fas fa-envelope mr-1"></i><span data-bind="profile.contactMethod">Email preferred</span>
+                            </span>
+                            <button 
+                                class="bg-primary text-primary-foreground px-4 py-2 rounded-md text-sm font-brand-medium hover:opacity-90 transition-opacity"
+                                data-event="click:contactMember"
+                                data-member-id="profile.id"
+                            >
+                                Connect
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+                
+                <!-- Load More -->
+                <div class="text-center mt-12">
+                    <button 
+                        class="px-6 py-3 border border-border text-muted-foreground rounded-md font-brand-medium hover:bg-muted transition-colors"
+                        data-event="click:loadMoreProfiles"
+                    >
+                        Load More Profiles
+                    </button>
+                </div>
+            </main>
+        </div>
+        <!-- @END_COMPONENT: SkillsDatabase -->
+        
+        <!-- Admin Panel -->
+        <!-- @COMPONENT: AdminPanel -->
+        <div id="admin-panel" class="hidden min-h-screen">
+            <header class="bg-card border-b border-border shadow-sm">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center py-6">
+                        <div>
+                            <h1 class="font-brand-header text-xl">Admin Panel</h1>
+                            <p class="text-muted-foreground font-brand-light">Manage community member approvals</p>
+                        </div>
+                        <button 
+                            class="text-muted-foreground hover:text-foreground font-brand-light"
+                            data-event="click:backToDashboard"
+                        >
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Stats Overview -->
+                <div class="grid md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-card rounded-lg shadow border border-border p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-warning text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-2xl font-brand-medium" data-bind="stats.pending">3</p>
+                                <p class="text-sm text-muted-foreground font-brand-light">Pending Approval</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card rounded-lg shadow border border-border p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-success text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-2xl font-brand-medium" data-bind="stats.approved">12</p>
+                                <p class="text-sm text-muted-foreground font-brand-light">Approved Members</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card rounded-lg shadow border border-border p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-primary text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-2xl font-brand-medium" data-bind="stats.total">15</p>
+                                <p class="text-sm text-muted-foreground font-brand-light">Total Profiles</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card rounded-lg shadow border border-border p-6">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-download text-accent text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <button 
+                                    class="text-sm bg-accent text-accent-foreground px-4 py-2 rounded font-brand-medium hover:opacity-90 transition-opacity"
+                                    data-event="click:exportData"
+                                >
+                                    Export Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pending Approvals -->
+                <div class="bg-card rounded-lg shadow-lg border border-border mb-8">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="font-brand-medium text-xl">Pending Approvals</h2>
+                        <p class="text-muted-foreground font-brand-light">Review and approve new community member profiles</p>
+                    </div>
+                    
+                    <div class="divide-y divide-border">
+                        <!-- @MAP: pendingProfiles.map(profile => ( -->
+                        <div class="p-6" data-mock="true">
+                            <div class="flex justify-between items-start">
+                                <div class="flex-1">
+                                    <div class="flex items-center mb-2">
+                                        <h3 class="font-brand-medium text-lg mr-4" data-bind="profile.name">Michael Thompson</h3>
+                                        <span class="px-2 py-1 bg-warning/10 text-warning text-xs rounded-full font-brand-light">Pending Review</span>
+                                    </div>
+                                    
+                                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <p class="text-sm text-muted-foreground font-brand-light">
+                                                <strong>Occupation:</strong> <span data-bind="profile.occupation">Financial Advisor</span>
+                                            </p>
+                                            <p class="text-sm text-muted-foreground font-brand-light">
+                                                <strong>Member:</strong> <span data-bind="profile.isMember">Yes</span>
+                                            </p>
+                                            <p class="text-sm text-muted-foreground font-brand-light">
+                                                <strong>Contact:</strong> <span data-bind="profile.contact">Email</span>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm text-muted-foreground font-brand-light">
+                                                <strong>Availability:</strong> <span data-bind="profile.availability">3-5 hrs/week</span>
+                                            </p>
+                                            <p class="text-sm text-muted-foreground font-brand-light">
+                                                <strong>Submitted:</strong> <span data-bind="profile.submitted">2 days ago</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h4 class="text-sm font-brand-medium mb-2">Key Skills</h4>
+                                        <p class="text-sm text-muted-foreground font-brand-light" data-bind="profile.skills">Financial planning, investment strategy, ethical business practices, small business consulting</p>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        <h4 class="text-sm font-brand-medium mb-2">Top Skill Ratings</h4>
+                                        <div class="flex flex-wrap gap-2">
+                                            <span class="px-2 py-1 bg-muted text-foreground text-xs rounded font-brand-light" data-mock="true">Fundraising ★★★★★</span>
+                                            <span class="px-2 py-1 bg-muted text-foreground text-xs rounded font-brand-light" data-mock="true">Strategy ★★★★☆</span>
+                                            <span class="px-2 py-1 bg-muted text-foreground text-xs rounded font-brand-light" data-mock="true">Leadership ★★★★☆</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-3 ml-6">
+                                    <button 
+                                        class="bg-destructive text-destructive-foreground px-4 py-2 rounded-md text-sm font-brand-medium hover:opacity-90 transition-opacity"
+                                        data-event="click:rejectProfile"
+                                        data-profile-id="profile.id"
+                                    >
+                                        <i class="fas fa-times mr-2"></i>Reject
+                                    </button>
+                                    <button 
+                                        class="bg-success text-white px-4 py-2 rounded-md text-sm font-brand-medium hover:opacity-90 transition-opacity"
+                                        data-event="click:approveProfile"
+                                        data-profile-id="profile.id"
+                                    >
+                                        <i class="fas fa-check mr-2"></i>Approve
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                        
+                        <div class="p-6 text-center text-muted-foreground font-brand-light" data-show-when="pendingProfiles.length === 0">
+                            No pending approvals at this time.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="bg-card rounded-lg shadow-lg border border-border">
+                    <div class="p-6 border-b border-border">
+                        <h2 class="font-brand-medium text-xl">Recent Activity</h2>
+                        <p class="text-muted-foreground font-brand-light">Latest actions and notifications</p>
+                    </div>
+                    
+                    <div class="divide-y divide-border">
+                        <!-- @MAP: recentActivity.map(activity => ( -->
+                        <div class="p-4 flex items-center" data-mock="true">
+                            <div class="w-8 h-8 bg-success/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-check text-success text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-brand-light">
+                                    <span class="font-brand-medium" data-bind="activity.profileName">Sarah Johnson</span> was approved and added to the community database
+                                </p>
+                                <p class="text-xs text-muted-foreground font-brand-light" data-bind="activity.timestamp">5 minutes ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 flex items-center" data-mock="true">
+                            <div class="w-8 h-8 bg-accent/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-plus text-accent text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-brand-light">
+                                    New profile submission from <span class="font-brand-medium" data-bind="activity.profileName">David Chen</span>
+                                </p>
+                                <p class="text-xs text-muted-foreground font-brand-light" data-bind="activity.timestamp">2 hours ago</p>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 flex items-center" data-mock="true">
+                            <div class="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-primary text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-brand-light">
+                                    Email notification sent to admin for new submissions
+                                </p>
+                                <p class="text-xs text-muted-foreground font-brand-light" data-bind="activity.timestamp">1 day ago</p>
+                            </div>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+            </main>
+        </div>
+        <!-- @END_COMPONENT: AdminPanel -->
+        
+    </div>
+    <!-- @END_COMPONENT: AppContainer -->
+    
+    <script>
+        (function() {
+            // TODO: Implement authentication, form validation, and state management
+            
+            // Simple navigation for mockup demonstration
+            const showScreen = (screenId) => {
+                document.querySelectorAll('[id$="-screen"], [id$="-dashboard"], [id$="-setup"], [id$="-database"], [id$="-panel"]').forEach(el => {
+                    el.classList.add('hidden');
+                });
+                document.getElementById(screenId).classList.remove('hidden');
+            };
+            
+            // Rating star interactions
+            document.addEventListener('click', (e) => {
+                if (e.target.classList.contains('rating-star')) {
+                    const rating = parseInt(e.target.dataset.rating);
+                    const container = e.target.parentElement;
+                    const stars = container.querySelectorAll('.rating-star');
+                    
+                    stars.forEach((star, index) => {
+                        if (index < rating) {
+                            star.classList.add('active');
+                        } else {
+                            star.classList.remove('active');
+                        }
+                    });
+                }
+            });
+            
+            // Navigation handlers
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+                
+                if (target.dataset.event === 'click:handleLogin') {
+                    e.preventDefault();
+                    showScreen('main-dashboard');
+                }
+                
+                if (target.dataset.event === 'click:showSkillsSetup') {
+                    showScreen('skills-setup');
+                }
+                
+                if (target.dataset.event === 'click:showSkillsDatabase') {
+                    showScreen('skills-database');
+                }
+                
+                if (target.dataset.event === 'click:showAdminPanel') {
+                    showScreen('admin-panel');
+                }
+                
+                if (target.dataset.event === 'click:backToDashboard') {
+                    showScreen('main-dashboard');
+                }
+                
+                if (target.dataset.event === 'click:handleLogout') {
+                    showScreen('login-screen');
+                }
+            });
+            
+            // Initialize with login screen
+            showScreen('login-screen');
+        })();
+    </script>
+</body>
+</html>

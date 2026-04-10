@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Skills Matrix - Redemptive Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                }
+            },
+            fontFamily: {
+                sans: ['Inter', 'system-ui', 'sans-serif'],
+            }
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --background: hsl(210 40% 98%);
+            --foreground: hsl(210 15% 15%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(210 15% 15%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(210 15% 15%);
+            --primary: hsl(217 91% 60%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(210 40% 96%);
+            --secondary-foreground: hsl(215 25% 27%);
+            --muted: hsl(210 40% 96%);
+            --muted-foreground: hsl(215 25% 45%);
+            --accent: hsl(210 40% 94%);
+            --accent-foreground: hsl(215 25% 27%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 100%);
+            --border: hsl(214 32% 91%);
+            --input: hsl(214 32% 91%);
+            --ring: hsl(217 91% 60%);
+            --radius: 8px;
+        }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        body { font-family: 'Inter', system-ui, sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+
+    <!-- @COMPONENT: LoginScreen -->
+    <div id="loginScreen" class="screen active">
+        <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+            <div class="max-w-md w-full space-y-8">
+                <div class="text-center">
+                    <div class="mx-auto h-12 w-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-primary-foreground text-xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900">Skills Matrix Portal</h2>
+                    <p class="mt-2 text-muted-foreground">Enter your access credentials to continue</p>
+                </div>
+                <form class="mt-8 space-y-6" data-implementation="Handle authentication with Replit Auth">
+                    <div class="bg-card rounded-lg shadow-sm border border-border p-6">
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-foreground mb-2">Access Password</label>
+                            <input id="password" name="password" type="password" required 
+                                   class="w-full px-3 py-2 border border-input rounded-md shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                                   placeholder="Enter portal password" data-mock="true">
+                        </div>
+                        <button type="submit" data-event="click:handleLogin"
+                                class="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                            <i class="fas fa-sign-in-alt mr-2"></i>
+                            Access Portal
+                        </button>
+                    </div>
+                </form>
+                <div class="text-center text-sm text-muted-foreground">
+                    <p>Redemptive Enterprise Solutions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: LoginScreen -->
+
+    <!-- @COMPONENT: MainDashboard -->
+    <div id="mainDashboard" class="screen">
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-users text-primary-foreground text-sm"></i>
+                        </div>
+                        <h1 class="text-xl font-semibold text-foreground">Skills Matrix Portal</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-muted-foreground" data-bind="user.email">admin@company.com</span>
+                        <button class="text-muted-foreground hover:text-foreground transition-colors" data-event="click:handleLogout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-foreground mb-2">Welcome to Skills Matrix</h2>
+                <p class="text-muted-foreground">Manage and view enterprise skill profiles</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <!-- Setup Skills Card -->
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow">
+                    <div class="text-center">
+                        <div class="mx-auto h-16 w-16 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-plus-circle text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-2">Setup Skills</h3>
+                        <p class="text-muted-foreground mb-6">Create your professional skill profile for team visibility</p>
+                        <button data-event="click:showSetupForm"
+                                class="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-3 px-4 rounded-md transition-colors">
+                            Create Profile
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View Skills Card -->
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow">
+                    <div class="text-center">
+                        <div class="mx-auto h-16 w-16 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-search text-green-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-2">View Skills</h3>
+                        <p class="text-muted-foreground mb-6">Browse approved team member skill profiles and expertise</p>
+                        <button data-event="click:showSkillsDatabase"
+                                class="w-full bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium py-3 px-4 rounded-md transition-colors">
+                            Browse Profiles
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Section (visible only for admins) -->
+            <div class="mt-8 max-w-4xl mx-auto" data-admin-only="true">
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <i class="fas fa-crown text-amber-600 mr-2"></i>
+                        <span class="text-sm font-medium text-amber-800">Admin Controls</span>
+                    </div>
+                    <div class="mt-2">
+                        <button data-event="click:showAdminPanel"
+                                class="text-sm bg-amber-100 hover:bg-amber-200 text-amber-800 px-3 py-1 rounded-md transition-colors">
+                            Review Pending Profiles
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: MainDashboard -->
+
+    <!-- @COMPONENT: SkillsSetupForm -->
+    <div id="setupSkillsScreen" class="screen">
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <button data-event="click:showMainDashboard" class="mr-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Setup Skills Profile</h1>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-card rounded-lg border border-border p-6">
+                <form data-implementation="Handle form submission and validation">
+                    <!-- Personal Information -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Personal Information</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Full Name *</label>
+                                <input type="text" required data-mock="true" value="John Smith"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Email *</label>
+                                <input type="email" required data-mock="true" value="john.smith@company.com"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Department</label>
+                                <select data-mock="true" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>Engineering</option>
+                                    <option>Marketing</option>
+                                    <option>Sales</option>
+                                    <option>Operations</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Years of Experience</label>
+                                <select data-mock="true" class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                                    <option>0-2 years</option>
+                                    <option>3-5 years</option>
+                                    <option>6-10 years</option>
+                                    <option>10+ years</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical Skills -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Technical Skills</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Programming Languages</label>
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    <!-- @MAP: languages.map(lang => ( -->
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">JavaScript</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Python</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Java</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">C#</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">PHP</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Go</span>
+                                    </label>
+                                    <!-- @END_MAP )) -->
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Frameworks & Technologies</label>
+                                <textarea rows="3" data-mock="true" placeholder="e.g., React, Node.js, Docker, AWS..."
+                                          class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">React, Node.js, PostgreSQL, Docker, AWS</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Skill Level Assessment</label>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium">Frontend Development</span>
+                                        <select data-mock="true" class="px-3 py-1 border border-input rounded-md text-sm">
+                                            <option>Beginner</option>
+                                            <option>Intermediate</option>
+                                            <option selected>Advanced</option>
+                                            <option>Expert</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium">Backend Development</span>
+                                        <select data-mock="true" class="px-3 py-1 border border-input rounded-md text-sm">
+                                            <option>Beginner</option>
+                                            <option selected>Intermediate</option>
+                                            <option>Advanced</option>
+                                            <option>Expert</option>
+                                        </select>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-sm font-medium">Database Management</span>
+                                        <select data-mock="true" class="px-3 py-1 border border-input rounded-md text-sm">
+                                            <option>Beginner</option>
+                                            <option selected>Intermediate</option>
+                                            <option>Advanced</option>
+                                            <option>Expert</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Experience -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Professional Experience</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Current Role</label>
+                                <input type="text" data-mock="true" value="Senior Software Engineer"
+                                       class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Key Achievements</label>
+                                <textarea rows="3" data-mock="true" 
+                                          class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">Led development of customer portal that increased user engagement by 40%. Mentored 3 junior developers and implemented CI/CD pipeline reducing deployment time by 60%.</textarea>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Areas of Interest for Growth</label>
+                                <textarea rows="2" data-mock="true" placeholder="What skills would you like to develop further?"
+                                          class="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">Machine Learning, Cloud Architecture, Team Leadership</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-foreground mb-4">Availability & Preferences</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Available for Cross-Functional Projects</label>
+                                <div class="flex space-x-4">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="radio" name="availability" checked data-mock="true" class="text-primary focus:ring-ring">
+                                        <span class="text-sm">Yes</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="radio" name="availability" data-mock="true" class="text-primary focus:ring-ring">
+                                        <span class="text-sm">Limited</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="radio" name="availability" data-mock="true" class="text-primary focus:ring-ring">
+                                        <span class="text-sm">No</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-foreground mb-2">Preferred Project Types</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" checked class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Web Applications</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Mobile Apps</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" checked class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">API Development</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2" data-mock="true">
+                                        <input type="checkbox" class="rounded border-input text-primary focus:ring-ring">
+                                        <span class="text-sm">Data Analysis</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" data-event="click:showMainDashboard"
+                                class="px-6 py-2 border border-border text-muted-foreground hover:text-foreground rounded-md transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" data-event="click:handleSubmitProfile"
+                                data-implementation="Send form data to backend and trigger admin email notification"
+                                class="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-md transition-colors">
+                            Submit for Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SkillsSetupForm -->
+
+    <!-- @COMPONENT: ViewSkillsDatabase -->
+    <div id="viewSkillsScreen" class="screen">
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <button data-event="click:showMainDashboard" class="mr-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Skills Database</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"></i>
+                            <input type="text" placeholder="Search skills or names..." data-mock="true"
+                                   class="pl-10 pr-4 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Filters -->
+            <div class="bg-card rounded-lg border border-border p-4 mb-6">
+                <div class="flex flex-wrap gap-4 items-center">
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1">Department</label>
+                        <select data-mock="true" class="px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>All Departments</option>
+                            <option>Engineering</option>
+                            <option>Marketing</option>
+                            <option>Sales</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1">Skill Level</label>
+                        <select data-mock="true" class="px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>All Levels</option>
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                            <option>Expert</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1">Availability</label>
+                        <select data-mock="true" class="px-3 py-2 border border-input rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-ring">
+                            <option>All</option>
+                            <option>Available</option>
+                            <option>Limited</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Profiles Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- @MAP: approvedProfiles.map(profile => ( -->
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-semibold text-foreground" data-bind="profile.name">Sarah Johnson</h3>
+                            <p class="text-sm text-muted-foreground" data-bind="profile.role">Frontend Developer</p>
+                            <p class="text-xs text-muted-foreground" data-bind="profile.department">Engineering</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Available
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Key Skills</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">React</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">JavaScript</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">CSS</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800">+3 more</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Experience Level</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Frontend</span>
+                                <span class="font-medium text-primary">Advanced</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span>UI/UX Design</span>
+                                <span class="font-medium text-primary">Intermediate</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full text-sm bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 px-3 rounded-md transition-colors"
+                            data-event="click:viewProfile" data-profile-id="1">
+                        View Full Profile
+                    </button>
+                </div>
+
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-semibold text-foreground">Michael Chen</h3>
+                            <p class="text-sm text-muted-foreground">Backend Engineer</p>
+                            <p class="text-xs text-muted-foreground">Engineering</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                Limited
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Key Skills</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Python</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Django</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">PostgreSQL</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800">+5 more</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Experience Level</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Backend</span>
+                                <span class="font-medium text-primary">Expert</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span>Database</span>
+                                <span class="font-medium text-primary">Advanced</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full text-sm bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 px-3 rounded-md transition-colors"
+                            data-event="click:viewProfile" data-profile-id="2">
+                        View Full Profile
+                    </button>
+                </div>
+
+                <div class="bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow" data-mock="true">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-semibold text-foreground">Emily Rodriguez</h3>
+                            <p class="text-sm text-muted-foreground">Full Stack Developer</p>
+                            <p class="text-xs text-muted-foreground">Engineering</p>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Available
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Key Skills</h4>
+                        <div class="flex flex-wrap gap-1">
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Node.js</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">React</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">AWS</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800">+4 more</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-foreground mb-2">Experience Level</h4>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs">
+                                <span>Full Stack</span>
+                                <span class="font-medium text-primary">Advanced</span>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span>Cloud</span>
+                                <span class="font-medium text-primary">Intermediate</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="w-full text-sm bg-secondary hover:bg-secondary/80 text-secondary-foreground py-2 px-3 rounded-md transition-colors"
+                            data-event="click:viewProfile" data-profile-id="3">
+                        View Full Profile
+                    </button>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-8 flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    <button class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">Previous</button>
+                    <button class="px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md">1</button>
+                    <button class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">2</button>
+                    <button class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">3</button>
+                    <button class="px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">Next</button>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: ViewSkillsDatabase -->
+
+    <!-- @COMPONENT: AdminPanel -->
+    <div id="adminPanel" class="screen">
+        <nav class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <button data-event="click:showMainDashboard" class="mr-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <h1 class="text-xl font-semibold text-foreground">Admin Panel</h1>
+                        <span class="ml-3 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                            <i class="fas fa-crown mr-1"></i>
+                            Admin Only
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Stats Overview -->
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-card rounded-lg border border-border p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <i class="fas fa-clock text-blue-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-muted-foreground">Pending Review</p>
+                            <p class="text-lg font-semibold text-foreground" data-bind="stats.pending">3</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card rounded-lg border border-border p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <i class="fas fa-check text-green-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-muted-foreground">Approved</p>
+                            <p class="text-lg font-semibold text-foreground" data-bind="stats.approved">24</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card rounded-lg border border-border p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-red-100 rounded-lg">
+                            <i class="fas fa-times text-red-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-muted-foreground">Rejected</p>
+                            <p class="text-lg font-semibold text-foreground" data-bind="stats.rejected">2</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-card rounded-lg border border-border p-4">
+                    <div class="flex items-center">
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <i class="fas fa-users text-purple-600"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-muted-foreground">Total Profiles</p>
+                            <p class="text-lg font-semibold text-foreground" data-bind="stats.total">29</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Reviews -->
+            <div class="bg-card rounded-lg border border-border">
+                <div class="p-6 border-b border-border">
+                    <h2 class="text-lg font-semibold text-foreground">Pending Profile Reviews</h2>
+                    <p class="text-sm text-muted-foreground">Review and approve new skill profiles</p>
+                </div>
+
+                <div class="divide-y divide-border">
+                    <!-- @MAP: pendingProfiles.map(profile => ( -->
+                    <div class="p-6" data-mock="true">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="font-medium text-foreground" data-bind="profile.name">Alex Thompson</h3>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Pending Review
+                                    </span>
+                                    <span class="text-xs text-muted-foreground" data-bind="profile.submittedAt">Submitted 2 hours ago</span>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-muted-foreground">Department: <span class="text-foreground font-medium">Engineering</span></p>
+                                        <p class="text-sm text-muted-foreground">Role: <span class="text-foreground font-medium">DevOps Engineer</span></p>
+                                        <p class="text-sm text-muted-foreground">Experience: <span class="text-foreground font-medium">6-10 years</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-muted-foreground mb-1">Key Skills:</p>
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Docker</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Kubernetes</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">AWS</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800">+4 more</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button data-event="click:viewFullProfile" data-profile-id="pending-1"
+                                    class="text-sm text-primary hover:text-primary/80 transition-colors">
+                                View Full Profile
+                            </button>
+                            <button data-event="click:approveProfile" data-profile-id="pending-1"
+                                    data-implementation="Update profile status to approved and send notification email"
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors">
+                                <i class="fas fa-check mr-1"></i>
+                                Approve
+                            </button>
+                            <button data-event="click:rejectProfile" data-profile-id="pending-1"
+                                    data-implementation="Update profile status to rejected and send notification email"
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
+                                <i class="fas fa-times mr-1"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-6" data-mock="true">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <h3 class="font-medium text-foreground">Jessica Liu</h3>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Pending Review
+                                    </span>
+                                    <span class="text-xs text-muted-foreground">Submitted 5 hours ago</span>
+                                </div>
+                                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p class="text-sm text-muted-foreground">Department: <span class="text-foreground font-medium">Marketing</span></p>
+                                        <p class="text-sm text-muted-foreground">Role: <span class="text-foreground font-medium">Digital Marketing Specialist</span></p>
+                                        <p class="text-sm text-muted-foreground">Experience: <span class="text-foreground font-medium">3-5 years</span></p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-muted-foreground mb-1">Key Skills:</p>
+                                        <div class="flex flex-wrap gap-1">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">SEO</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Google Ads</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800">Analytics</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-md text-xs bg-gray-100 text-gray-800">+3 more</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button data-event="click:viewFullProfile" data-profile-id="pending-2"
+                                    class="text-sm text-primary hover:text-primary/80 transition-colors">
+                                View Full Profile
+                            </button>
+                            <button data-event="click:approveProfile" data-profile-id="pending-2"
+                                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-md transition-colors">
+                                <i class="fas fa-check mr-1"></i>
+                                Approve
+                            </button>
+                            <button data-event="click:rejectProfile" data-profile-id="pending-2"
+                                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-md transition-colors">
+                                <i class="fas fa-times mr-1"></i>
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: AdminPanel -->
+
+    <script>
+    (function() {
+        // TODO: Implement proper authentication, state management, and API integration
+        
+        // Screen navigation system
+        const screens = {
+            login: document.getElementById('loginScreen'),
+            main: document.getElementById('mainDashboard'),
+            setup: document.getElementById('setupSkillsScreen'),
+            view: document.getElementById('viewSkillsScreen'),
+            admin: document.getElementById('adminPanel')
+        };
+
+        function showScreen(screenName) {
+            Object.values(screens).forEach(screen => screen.classList.remove('active'));
+            screens[screenName].classList.add('active');
+        }
+
+        // Event handlers for navigation
+        document.addEventListener('click', function(e) {
+            const element = e.target.closest('[data-event]');
+            if (!element) return;
+
+            const event = element.getAttribute('data-event');
+            
+            switch(event) {
+                case 'click:handleLogin':
+                    e.preventDefault();
+                    // TODO: Implement Replit Auth integration
+                    showScreen('main');
+                    break;
+                    
+                case 'click:showMainDashboard':
+                    showScreen('main');
+                    break;
+                    
+                case 'click:showSetupForm':
+                    showScreen('setup');
+                    break;
+                    
+                case 'click:showSkillsDatabase':
+                    showScreen('view');
+                    break;
+                    
+                case 'click:showAdminPanel':
+                    showScreen('admin');
+                    break;
+                    
+                case 'click:handleSubmitProfile':
+                    e.preventDefault();
+                    // TODO: Submit form data to PostgreSQL database
+                    // TODO: Send email notification to admin
+                    alert('Profile submitted for review! Admin will receive an email notification.');
+                    showScreen('main');
+                    break;
+                    
+                case 'click:approveProfile':
+                    // TODO: Update database status to approved
+                    // TODO: Send approval email to user
+                    alert('Profile approved successfully!');
+                    break;
+                    
+                case 'click:rejectProfile':
+                    // TODO: Update database status to rejected
+                    // TODO: Send rejection email to user
+                    alert('Profile rejected.');
+                    break;
+                    
+                case 'click:handleLogout':
+                    showScreen('login');
+                    break;
+            }
+        });
+
+        // Form validation placeholder
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                // TODO: Implement proper form validation
+                console.log('Form submission intercepted for validation');
+            });
+        });
+    })();
+    </script>
+</body>
+</html>

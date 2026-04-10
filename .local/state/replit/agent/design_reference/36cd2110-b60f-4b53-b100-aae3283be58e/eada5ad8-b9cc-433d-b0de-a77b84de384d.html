@@ -1,0 +1,1015 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St Basil's Redemptive Enterprise Skills Matrix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Brandon+Grotesque:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "var(--background)",
+                    foreground: "var(--foreground)",
+                    card: {
+                        DEFAULT: "var(--card)",
+                        foreground: "var(--card-foreground)",
+                    },
+                    popover: {
+                        DEFAULT: "var(--popover)",
+                        foreground: "var(--popover-foreground)",
+                    },
+                    primary: {
+                        DEFAULT: "var(--primary)",
+                        foreground: "var(--primary-foreground)",
+                    },
+                    secondary: {
+                        DEFAULT: "var(--secondary)",
+                        foreground: "var(--secondary-foreground)",
+                    },
+                    muted: {
+                        DEFAULT: "var(--muted)",
+                        foreground: "var(--muted-foreground)",
+                    },
+                    accent: {
+                        DEFAULT: "var(--accent)",
+                        foreground: "var(--accent-foreground)",
+                    },
+                    destructive: {
+                        DEFAULT: "var(--destructive)",
+                        foreground: "var(--destructive-foreground)",
+                    },
+                    border: "var(--border)",
+                    input: "var(--input)",
+                    ring: "var(--ring)",
+                    trust: "var(--trust)",
+                    growth: "var(--growth)",
+                    community: "var(--community)",
+                },
+                fontFamily: {
+                    'brandon': ['Brandon Grotesque', 'sans-serif'],
+                    'caslon': ['Adobe Caslon Pro', 'serif'],
+                }
+            },
+        }
+    };
+    </script>
+    <style>
+        :root {
+            --background: hsl(0 0% 98%);
+            --foreground: hsl(0 0% 0%);
+            --card: hsl(0 0% 100%);
+            --card-foreground: hsl(0 0% 0%);
+            --popover: hsl(0 0% 100%);
+            --popover-foreground: hsl(0 0% 0%);
+            --primary: hsl(0 0% 0%);
+            --primary-foreground: hsl(0 0% 100%);
+            --secondary: hsl(0 0% 60%);
+            --secondary-foreground: hsl(0 0% 0%);
+            --muted: hsl(0 0% 96%);
+            --muted-foreground: hsl(0 0% 40%);
+            --accent: hsl(0 0% 96%);
+            --accent-foreground: hsl(0 0% 0%);
+            --destructive: hsl(0 84% 60%);
+            --destructive-foreground: hsl(0 0% 98%);
+            --border: hsl(0 0% 90%);
+            --input: hsl(0 0% 95%);
+            --ring: hsl(0 0% 0%);
+            --trust: hsl(200 30% 60%);
+            --growth: hsl(100 30% 60%);
+            --community: hsl(15 70% 65%);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: 'Brandon Grotesque', sans-serif;
+        }
+
+        .font-caslon {
+            font-family: 'Adobe Caslon Pro', serif;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 4px;
+        }
+
+        .star {
+            cursor: pointer;
+            color: hsl(0 0% 80%);
+            transition: color 0.2s;
+        }
+
+        .star.filled {
+            color: hsl(45 100% 50%);
+        }
+
+        .star:hover {
+            color: hsl(45 100% 60%);
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+
+<!-- @COMPONENT: App [main application container] -->
+<div id="app" class="min-h-screen">
+
+    <!-- PASSWORD ENTRY SCREEN -->
+    <!-- @COMPONENT: PasswordScreen [initial password protection] -->
+    <div id="password-screen" class="min-h-screen bg-background flex items-center justify-center p-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="font-caslon text-4xl font-bold text-foreground mb-2">St Basil's</h1>
+                <h2 class="font-brandon text-xl font-medium text-secondary mb-4">Redemptive Enterprise</h2>
+                <p class="text-muted-foreground font-light">Skills Matrix Portal</p>
+            </div>
+            
+            <div class="bg-card border border-border rounded-lg p-6 shadow-sm">
+                <h3 class="font-brandon font-medium text-lg mb-4">Access Required</h3>
+                <p class="text-muted-foreground text-sm mb-6 font-light">Please enter the access password to continue</p>
+                
+                <form data-event="submit:handlePasswordSubmit">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" 
+                               class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                               data-bind="password"
+                               placeholder="Enter password">
+                    </div>
+                    <button type="submit" 
+                            class="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors"
+                            data-implementation="Validate password and show main interface">
+                        Enter
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: PasswordScreen -->
+
+    <!-- MAIN APPLICATION INTERFACE -->
+    <!-- @COMPONENT: MainInterface [authenticated user interface] -->
+    <div id="main-interface" class="hidden min-h-screen">
+        <!-- Header -->
+        <!-- @COMPONENT: Header [application header with navigation] -->
+        <header class="bg-card border-b border-border">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center space-x-4">
+                        <h1 class="font-caslon text-2xl font-bold">St Basil's</h1>
+                        <span class="text-muted-foreground">|</span>
+                        <h2 class="font-brandon text-lg font-medium text-secondary">RE Skills Matrix</h2>
+                    </div>
+                    
+                    <nav class="flex space-x-1">
+                        <button id="nav-setup" 
+                                class="nav-btn active px-4 py-2 rounded-md font-brandon font-medium transition-colors"
+                                data-event="click:showSetupSkills">
+                            Setup Skills
+                        </button>
+                        <button id="nav-view" 
+                                class="nav-btn px-4 py-2 rounded-md font-brandon font-medium transition-colors"
+                                data-event="click:showViewSkills">
+                            View Skills
+                        </button>
+                        <button id="nav-admin" 
+                                class="nav-btn px-4 py-2 rounded-md font-brandon font-medium transition-colors"
+                                data-event="click:showAdminDashboard"
+                                data-implementation="Show only for admin users">
+                            Admin
+                        </button>
+                    </nav>
+                    
+                    <button class="text-muted-foreground hover:text-foreground transition-colors"
+                            data-event="click:logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+        <!-- @END_COMPONENT: Header -->
+
+        <main class="flex-1">
+            
+            <!-- SETUP SKILLS SECTION -->
+            <!-- @COMPONENT: SetupSkills [skills registration form] -->
+            <section id="setup-skills" class="max-w-4xl mx-auto p-6">
+                <div class="mb-8">
+                    <h2 class="font-caslon text-3xl font-bold mb-2">Setup Your Skills Profile</h2>
+                    <p class="text-muted-foreground font-light">Share your expertise with the St Basil's Redemptive Enterprise community</p>
+                </div>
+
+                <form class="space-y-8" data-event="submit:handleSkillsSubmit">
+                    <!-- Personal Information -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="font-brandon font-medium text-xl mb-6 text-foreground">Personal Information</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Full Name *</label>
+                                <input type="text" 
+                                       class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                       data-bind="profile.name"
+                                       placeholder="Enter your full name">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Are you a member of St Basil's? *</label>
+                                <select class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                        data-bind="profile.isMember">
+                                    <option value="">Please select...</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                    <option value="regular-attendee">Regular Attendee</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <label class="block text-sm font-medium mb-2">Current Occupation *</label>
+                            <input type="text" 
+                                   class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                   data-bind="profile.occupation"
+                                   placeholder="e.g., Software Developer, Teacher, Business Owner">
+                        </div>
+                    </div>
+
+                    <!-- Core Skills -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="font-brandon font-medium text-xl mb-6">Core Skills & Expertise</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">What are your key skill sets? *</label>
+                                <textarea class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring h-24 resize-none"
+                                          data-bind="profile.keySkills"
+                                          placeholder="List your main skills, areas of expertise, and professional capabilities"></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Expert Knowledge You'd Share</label>
+                                <textarea class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring h-24 resize-none"
+                                          data-bind="profile.expertiseToShare"
+                                          placeholder="Is there anything that you are an expert in and would be willing to share/present to our Redemptive Enterprise Network?"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Skills Assessment -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="font-brandon font-medium text-xl mb-6">Skills Assessment</h3>
+                        <p class="text-muted-foreground text-sm mb-6 font-light">Rate your proficiency in each area (1 = Beginner, 5 = Expert)</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- @MAP: skillCategories.map(category => ( -->
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Integrated Faith</label>
+                                <div class="star-rating" data-bind="ratings.integratedFaith">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Self Leadership</label>
+                                <div class="star-rating" data-bind="ratings.selfLeadership">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Culture, Team & Values</label>
+                                <div class="star-rating" data-bind="ratings.cultureTeam">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Social Impact</label>
+                                <div class="star-rating" data-bind="ratings.socialImpact">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Innovation, Imagination</label>
+                                <div class="star-rating" data-bind="ratings.innovation">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Strategy, Business Model</label>
+                                <div class="star-rating" data-bind="ratings.strategy">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Marketing, Sales</label>
+                                <div class="star-rating" data-bind="ratings.marketing">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Operating Model</label>
+                                <div class="star-rating" data-bind="ratings.operations">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="skill-assessment">
+                                <label class="block text-sm font-medium mb-3">Fundraising & Governance</label>
+                                <div class="star-rating" data-bind="ratings.fundraising">
+                                    <i class="star fas fa-star" data-rating="1"></i>
+                                    <i class="star fas fa-star" data-rating="2"></i>
+                                    <i class="star fas fa-star" data-rating="3"></i>
+                                    <i class="star fas fa-star" data-rating="4"></i>
+                                    <i class="star fas fa-star" data-rating="5"></i>
+                                </div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+
+                    <!-- Availability & Contact -->
+                    <div class="bg-card border border-border rounded-lg p-6">
+                        <h3 class="font-brandon font-medium text-xl mb-6">Availability & Contact</h3>
+                        
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Preferred Contact Method *</label>
+                                <select class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                        data-bind="profile.contactMethod">
+                                    <option value="">Please select...</option>
+                                    <option value="email">Email</option>
+                                    <option value="phone">Phone</option>
+                                    <option value="whatsapp">WhatsApp</option>
+                                    <option value="in-person">In Person</option>
+                                </select>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Email Address *</label>
+                                    <input type="email" 
+                                           class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                           data-bind="profile.email"
+                                           placeholder="your.email@example.com">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium mb-2">Phone Number</label>
+                                    <input type="tel" 
+                                           class="w-full px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                           data-bind="profile.phone"
+                                           placeholder="+44 7XXX XXXXXX">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Weekly Availability</label>
+                                <div class="flex items-center space-x-4">
+                                    <label class="text-sm">Hours per week:</label>
+                                    <select class="px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                            data-bind="profile.weeklyHours">
+                                        <option value="0">No time available</option>
+                                        <option value="1-2">1-2 hours</option>
+                                        <option value="3-5">3-5 hours</option>
+                                        <option value="6-10">6-10 hours</option>
+                                        <option value="10+">10+ hours</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end">
+                        <button type="submit" 
+                                class="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-brandon font-medium hover:bg-primary/90 transition-colors flex items-center space-x-2"
+                                data-implementation="Submit form, send admin email, store in database">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Submit Profile for Review</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <!-- @END_COMPONENT: SetupSkills -->
+
+            <!-- VIEW SKILLS SECTION -->
+            <!-- @COMPONENT: ViewSkills [approved skills database display] -->
+            <section id="view-skills" class="hidden max-w-7xl mx-auto p-6">
+                <div class="mb-8">
+                    <h2 class="font-caslon text-3xl font-bold mb-2">Community Skills Database</h2>
+                    <p class="text-muted-foreground font-light">Discover the talents and expertise within our St Basil's community</p>
+                </div>
+
+                <!-- Search and Filters -->
+                <div class="bg-card border border-border rounded-lg p-4 mb-6">
+                    <div class="flex flex-col lg:flex-row gap-4">
+                        <div class="flex-1">
+                            <input type="text" 
+                                   placeholder="Search by name, skills, or occupation..."
+                                   class="w-full px-4 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                   data-bind="search.query">
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <select class="px-3 py-2 border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring"
+                                    data-bind="search.skillFilter">
+                                <option value="">All Skills</option>
+                                <option value="strategy">Strategy & Business</option>
+                                <option value="marketing">Marketing & Sales</option>
+                                <option value="innovation">Innovation</option>
+                                <option value="leadership">Leadership</option>
+                                <option value="operations">Operations</option>
+                                <option value="fundraising">Fundraising</option>
+                            </select>
+                            
+                            <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-md font-medium hover:bg-secondary/90 transition-colors"
+                                    data-event="click:applyFilters">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- @MAP: approvedProfiles.map(profile => ( -->
+                    <div class="skill-card bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brandon font-medium text-lg" data-bind="profile.name">Sarah Johnson</h3>
+                                <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Marketing Director</p>
+                            </div>
+                            <span class="px-2 py-1 bg-growth/20 text-growth text-xs rounded-md font-medium">
+                                <i class="fas fa-check-circle mr-1"></i>Verified
+                            </span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Key Skills:</p>
+                            <p class="text-sm text-muted-foreground font-light" data-bind="profile.keySkills">Digital Marketing, Brand Strategy, Content Creation, Social Media Management</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Top Expertise Areas:</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 bg-trust/20 text-trust text-xs rounded">Marketing</span>
+                                <span class="px-2 py-1 bg-community/20 text-community text-xs rounded">Strategy</span>
+                                <span class="px-2 py-1 bg-accent text-accent-foreground text-xs rounded">Innovation</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-4 border-t border-border">
+                            <div class="text-xs text-muted-foreground">
+                                <span data-bind="profile.weeklyHours">3-5 hours/week</span>
+                            </div>
+                            <button class="bg-primary text-primary-foreground px-3 py-1 rounded text-sm font-medium hover:bg-primary/90 transition-colors"
+                                    data-event="click:contactMember">
+                                Contact
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brandon font-medium text-lg">Michael Thompson</h3>
+                                <p class="text-sm text-muted-foreground">Business Consultant</p>
+                            </div>
+                            <span class="px-2 py-1 bg-growth/20 text-growth text-xs rounded-md font-medium">
+                                <i class="fas fa-check-circle mr-1"></i>Verified
+                            </span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Key Skills:</p>
+                            <p class="text-sm text-muted-foreground font-light">Strategic Planning, Financial Analysis, Business Development, Team Leadership</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Top Expertise Areas:</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 bg-trust/20 text-trust text-xs rounded">Strategy</span>
+                                <span class="px-2 py-1 bg-growth/20 text-growth text-xs rounded">Leadership</span>
+                                <span class="px-2 py-1 bg-community/20 text-community text-xs rounded">Fundraising</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-4 border-t border-border">
+                            <div class="text-xs text-muted-foreground">6-10 hours/week</div>
+                            <button class="bg-primary text-primary-foreground px-3 py-1 rounded text-sm font-medium hover:bg-primary/90 transition-colors">Contact</button>
+                        </div>
+                    </div>
+                    
+                    <div class="skill-card bg-card border border-border rounded-lg p-6 hover:shadow-md transition-shadow" data-mock="true">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="font-brandon font-medium text-lg">Emma Davis</h3>
+                                <p class="text-sm text-muted-foreground">Software Engineer</p>
+                            </div>
+                            <span class="px-2 py-1 bg-growth/20 text-growth text-xs rounded-md font-medium">
+                                <i class="fas fa-check-circle mr-1"></i>Verified
+                            </span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Key Skills:</p>
+                            <p class="text-sm text-muted-foreground font-light">Full-Stack Development, Database Design, Project Management, Technical Training</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <p class="text-sm font-medium mb-2">Top Expertise Areas:</p>
+                            <div class="flex flex-wrap gap-1">
+                                <span class="px-2 py-1 bg-community/20 text-community text-xs rounded">Innovation</span>
+                                <span class="px-2 py-1 bg-trust/20 text-trust text-xs rounded">Operations</span>
+                                <span class="px-2 py-1 bg-growth/20 text-growth text-xs rounded">Leadership</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center pt-4 border-t border-border">
+                            <div class="text-xs text-muted-foreground">1-2 hours/week</div>
+                            <button class="bg-primary text-primary-foreground px-3 py-1 rounded text-sm font-medium hover:bg-primary/90 transition-colors">Contact</button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                </div>
+                
+                <!-- Stats Summary -->
+                <div class="bg-muted border border-border rounded-lg p-6 mt-8">
+                    <h3 class="font-brandon font-medium text-lg mb-4">Community Overview</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-medium text-foreground" data-bind="stats.totalMembers">47</div>
+                            <div class="text-sm text-muted-foreground">Total Members</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-medium text-trust" data-bind="stats.skillCategories">9</div>
+                            <div class="text-sm text-muted-foreground">Skill Categories</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-medium text-growth" data-bind="stats.availableHours">156</div>
+                            <div class="text-sm text-muted-foreground">Available Hours/Week</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-medium text-community" data-bind="stats.experts">23</div>
+                            <div class="text-sm text-muted-foreground">Expert Contributors</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: ViewSkills -->
+
+            <!-- ADMIN DASHBOARD -->
+            <!-- @COMPONENT: AdminDashboard [profile approval interface] -->
+            <section id="admin-dashboard" class="hidden max-w-7xl mx-auto p-6">
+                <div class="mb-8">
+                    <h2 class="font-caslon text-3xl font-bold mb-2">Admin Dashboard</h2>
+                    <p class="text-muted-foreground font-light">Review and approve skill profiles for community inclusion</p>
+                </div>
+
+                <!-- Admin Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-card border border-border rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">Pending Reviews</p>
+                                <p class="text-2xl font-medium text-community" data-bind="admin.pendingCount">3</p>
+                            </div>
+                            <i class="fas fa-clock text-2xl text-community/60"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card border border-border rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">Approved Today</p>
+                                <p class="text-2xl font-medium text-growth" data-bind="admin.approvedToday">5</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-growth/60"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card border border-border rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">Total Profiles</p>
+                                <p class="text-2xl font-medium text-trust" data-bind="admin.totalProfiles">47</p>
+                            </div>
+                            <i class="fas fa-users text-2xl text-trust/60"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-card border border-border rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-muted-foreground">Export Data</p>
+                                <button class="text-sm text-primary hover:text-primary/80 font-medium mt-1"
+                                        data-event="click:exportData">
+                                    Download CSV
+                                </button>
+                            </div>
+                            <i class="fas fa-download text-2xl text-primary/60"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Approvals -->
+                <div class="bg-card border border-border rounded-lg p-6 mb-6">
+                    <h3 class="font-brandon font-medium text-xl mb-6 flex items-center">
+                        <i class="fas fa-hourglass-half mr-2 text-community"></i>
+                        Pending Approvals
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <!-- @MAP: pendingProfiles.map(profile => ( -->
+                        <div class="border border-border rounded-lg p-4 bg-muted/50" data-mock="true">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-medium text-lg" data-bind="profile.name">James Wilson</h4>
+                                    <p class="text-sm text-muted-foreground" data-bind="profile.occupation">Financial Advisor</p>
+                                    <p class="text-xs text-muted-foreground" data-bind="profile.submissionDate">Submitted: 2 hours ago</p>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button class="bg-growth text-white px-3 py-1 rounded text-sm hover:bg-growth/90 transition-colors"
+                                            data-event="click:approveProfile"
+                                            data-implementation="Approve profile and send confirmation email">
+                                        <i class="fas fa-check mr-1"></i>Approve
+                                    </button>
+                                    <button class="bg-destructive text-destructive-foreground px-3 py-1 rounded text-sm hover:bg-destructive/90 transition-colors"
+                                            data-event="click:rejectProfile">
+                                        <i class="fas fa-times mr-1"></i>Reject
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm font-medium mb-1">Key Skills:</p>
+                                    <p class="text-sm text-muted-foreground font-light" data-bind="profile.keySkills">Financial Planning, Investment Strategy, Risk Assessment, Business Analysis</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium mb-1">St Basil's Member:</p>
+                                    <p class="text-sm text-muted-foreground" data-bind="profile.isMember">Yes</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <p class="text-sm font-medium mb-2">Skills Ratings:</p>
+                                <div class="grid grid-cols-3 gap-2 text-xs">
+                                    <div class="flex justify-between">
+                                        <span>Strategy:</span>
+                                        <div class="flex">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Marketing:</span>
+                                        <div class="flex">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-gray-300"></i>
+                                            <i class="fas fa-star text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Leadership:</span>
+                                        <div class="flex">
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="text-sm text-primary hover:text-primary/80 font-medium"
+                                    data-event="click:viewFullProfile">
+                                View Full Profile <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="border border-border rounded-lg p-4 bg-muted/50" data-mock="true">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-medium text-lg">Lisa Chen</h4>
+                                    <p class="text-sm text-muted-foreground">Non-profit Director</p>
+                                    <p class="text-xs text-muted-foreground">Submitted: 1 day ago</p>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <button class="bg-growth text-white px-3 py-1 rounded text-sm hover:bg-growth/90 transition-colors">
+                                        <i class="fas fa-check mr-1"></i>Approve
+                                    </button>
+                                    <button class="bg-destructive text-destructive-foreground px-3 py-1 rounded text-sm hover:bg-destructive/90 transition-colors">
+                                        <i class="fas fa-times mr-1"></i>Reject
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <p class="text-sm font-medium mb-1">Key Skills:</p>
+                                    <p class="text-sm text-muted-foreground font-light">Program Management, Fundraising, Community Outreach, Volunteer Coordination</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium mb-1">St Basil's Member:</p>
+                                    <p class="text-sm text-muted-foreground">Regular Attendee</p>
+                                </div>
+                            </div>
+                            
+                            <button class="text-sm text-primary hover:text-primary/80 font-medium">
+                                View Full Profile <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <!-- @END_MAP )) -->
+                    </div>
+                </div>
+
+                <!-- Recently Approved -->
+                <div class="bg-card border border-border rounded-lg p-6">
+                    <h3 class="font-brandon font-medium text-xl mb-6 flex items-center">
+                        <i class="fas fa-check-circle mr-2 text-growth"></i>
+                        Recently Approved
+                    </h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-muted">
+                                <tr class="border-b border-border">
+                                    <th class="text-left p-3 font-medium">Name</th>
+                                    <th class="text-left p-3 font-medium">Occupation</th>
+                                    <th class="text-left p-3 font-medium">Approved Date</th>
+                                    <th class="text-left p-3 font-medium">Contact</th>
+                                    <th class="text-left p-3 font-medium">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-border" data-mock="true">
+                                    <td class="p-3" data-bind="profile.name">Sarah Johnson</td>
+                                    <td class="p-3 text-muted-foreground" data-bind="profile.occupation">Marketing Director</td>
+                                    <td class="p-3 text-muted-foreground" data-bind="profile.approvedDate">Today, 10:30 AM</td>
+                                    <td class="p-3 text-muted-foreground" data-bind="profile.email">sarah.j@email.com</td>
+                                    <td class="p-3">
+                                        <button class="text-primary hover:text-primary/80 text-sm"
+                                                data-event="click:editProfile">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-border" data-mock="true">
+                                    <td class="p-3">Michael Thompson</td>
+                                    <td class="p-3 text-muted-foreground">Business Consultant</td>
+                                    <td class="p-3 text-muted-foreground">Yesterday, 3:45 PM</td>
+                                    <td class="p-3 text-muted-foreground">m.thompson@email.com</td>
+                                    <td class="p-3">
+                                        <button class="text-primary hover:text-primary/80 text-sm">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-border" data-mock="true">
+                                    <td class="p-3">Emma Davis</td>
+                                    <td class="p-3 text-muted-foreground">Software Engineer</td>
+                                    <td class="p-3 text-muted-foreground">2 days ago, 1:20 PM</td>
+                                    <td class="p-3 text-muted-foreground">emma.davis@email.com</td>
+                                    <td class="p-3">
+                                        <button class="text-primary hover:text-primary/80 text-sm">
+                                            <i class="fas fa-edit mr-1"></i>Edit
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+            <!-- @END_COMPONENT: AdminDashboard -->
+
+        </main>
+    </div>
+    <!-- @END_COMPONENT: MainInterface -->
+
+    <!-- SUCCESS MESSAGE MODAL -->
+    <!-- @COMPONENT: SuccessModal [submission confirmation] -->
+    <div id="success-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div class="bg-card border border-border rounded-lg p-6 max-w-md w-full text-center">
+            <div class="mb-4">
+                <i class="fas fa-check-circle text-4xl text-growth"></i>
+            </div>
+            <h3 class="font-brandon font-medium text-xl mb-2">Profile Submitted!</h3>
+            <p class="text-muted-foreground text-sm mb-6 font-light">Your skills profile has been submitted for review. You'll receive an email notification once it's been approved.</p>
+            <button class="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition-colors"
+                    data-event="click:closeSuccessModal">
+                Continue
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: SuccessModal -->
+
+</div>
+<!-- @END_COMPONENT: App -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // TODO: Implement authentication, database operations, and email notifications
+    
+    // Navigation state management
+    let currentView = 'setup';
+    let isAuthenticated = false;
+    
+    // Mock data for demonstration
+    const mockProfiles = [
+        {
+            name: 'Sarah Johnson',
+            occupation: 'Marketing Director',
+            keySkills: 'Digital Marketing, Brand Strategy, Content Creation, Social Media Management',
+            isMember: 'Yes',
+            weeklyHours: '3-5 hours/week'
+        },
+        {
+            name: 'Michael Thompson', 
+            occupation: 'Business Consultant',
+            keySkills: 'Strategic Planning, Financial Analysis, Business Development, Team Leadership',
+            isMember: 'Yes',
+            weeklyHours: '6-10 hours/week'
+        }
+    ];
+
+    // DOM Elements
+    const passwordScreen = document.getElementById('password-screen');
+    const mainInterface = document.getElementById('main-interface');
+    const setupSkills = document.getElementById('setup-skills');
+    const viewSkills = document.getElementById('view-skills');
+    const adminDashboard = document.getElementById('admin-dashboard');
+    const successModal = document.getElementById('success-modal');
+
+    // Navigation functions
+    function showSection(sectionId) {
+        // Hide all sections
+        setupSkills.classList.add('hidden');
+        viewSkills.classList.add('hidden');
+        adminDashboard.classList.add('hidden');
+        
+        // Show selected section
+        document.getElementById(sectionId).classList.remove('hidden');
+        
+        // Update navigation buttons
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-primary', 'text-primary-foreground');
+            btn.classList.add('text-muted-foreground', 'hover:text-foreground', 'hover:bg-accent');
+        });
+        
+        const activeBtn = document.getElementById(`nav-${sectionId.replace('-', '')}`);
+        if (activeBtn) {
+            activeBtn.classList.add('active', 'bg-primary', 'text-primary-foreground');
+            activeBtn.classList.remove('text-muted-foreground', 'hover:text-foreground', 'hover:bg-accent');
+        }
+    }
+
+    // Star rating functionality
+    function initializeStarRatings() {
+        document.querySelectorAll('.star-rating').forEach(rating => {
+            const stars = rating.querySelectorAll('.star');
+            let currentRating = 0;
+            
+            stars.forEach((star, index) => {
+                star.addEventListener('click', () => {
+                    currentRating = index + 1;
+                    updateStarDisplay(stars, currentRating);
+                });
+                
+                star.addEventListener('mouseenter', () => {
+                    updateStarDisplay(stars, index + 1);
+                });
+                
+                rating.addEventListener('mouseleave', () => {
+                    updateStarDisplay(stars, currentRating);
+                });
+            });
+        });
+    }
+    
+    function updateStarDisplay(stars, rating) {
+        stars.forEach((star, index) => {
+            star.classList.toggle('filled', index < rating);
+        });
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // Password form submission
+        passwordScreen.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = this.querySelector('input[type="password"]').value;
+            
+            // TODO: Implement proper authentication
+            if (password.length > 0) {
+                passwordScreen.classList.add('hidden');
+                mainInterface.classList.remove('hidden');
+                isAuthenticated = true;
+                showSection('setup-skills');
+                initializeStarRatings();
+            }
+        });
+
+        // Navigation event listeners
+        document.getElementById('nav-setup').addEventListener('click', () => {
+            showSection('setup-skills');
+        });
+        
+        document.getElementById('nav-view').addEventListener('click', () => {
+            showSection('view-skills');
+        });
+        
+        document.getElementById('nav-admin').addEventListener('click', () => {
+            showSection('admin-dashboard');
+        });
+
+        // Skills form submission
+        setupSkills.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // TODO: Collect form data, validate, send to database, trigger admin email
+            
+            // Show success modal
+            successModal.classList.remove('hidden');
+        });
+
+        // Success modal close
+        successModal.querySelector('button').addEventListener('click', function() {
+            successModal.classList.add('hidden');
+            showSection('view-skills');
+        });
+
+        // Initialize star ratings when page loads
+        initializeStarRatings();
+    });
+
+    // TODO: Implement the following functionality:
+    // - Database operations (PostgreSQL)
+    // - Email notifications for admin
+    // - Profile approval/rejection logic
+    // - Export functionality for admin
+    // - Search and filter functionality for skills database
+    // - Session management and authentication
+    // - Form validation with error handling
+    
+})();
+</script>
+
+</body>
+</html>
