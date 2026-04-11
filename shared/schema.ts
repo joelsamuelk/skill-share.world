@@ -48,6 +48,7 @@ export const skillProfiles = pgTable("skill_profiles", {
   email: varchar("email").notNull(),
   phone: varchar("phone"),
   weeklyHours: varchar("weekly_hours"), // '0', '1-2', '3-5', '6-10', '10+'
+  integratedFaith: integer("integrated_faith"), // Legacy score kept for Replit dump compatibility
   agreeToContact: boolean("agree_to_contact").default(false),
   profileImageUrl: varchar("profile_image_url"),
   

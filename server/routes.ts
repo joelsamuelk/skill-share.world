@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, isAuthenticated, getAuthenticatedUserId } from "./replitAuth";
 import { insertSkillProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendEmail, notifyAdminsOfPendingProfile } from "./sendgrid";
@@ -15,7 +15,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       res.json(user);
     } catch (error) {
@@ -43,7 +46,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Skill profile routes
   app.post('/api/skill-profiles', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const profileData = insertSkillProfileSchema.parse({
         ...req.body,
         userId
@@ -105,7 +111,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       // Check if user is admin
       const user = await storage.getUser(userId);
@@ -124,7 +133,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/skill-profiles/:id', isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       // Get the user and the profile to be updated
       const user = await storage.getUser(userId);
@@ -159,7 +171,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete('/api/skill-profiles/:id', isAuthenticated, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       
       // Check if user is admin
       const user = await storage.getUser(userId);
@@ -178,7 +193,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Object storage routes for profile images
   app.get("/objects/:objectPath(*)", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.sendStatus(401);
+      }
       const objectStorageService = new ObjectStorageService();
       
       const objectFile = await objectStorageService.getObjectEntityFile(req.path);
@@ -219,7 +237,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const objectStorageService = new ObjectStorageService();
       
       const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
@@ -242,7 +263,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get current user's skill profile
   app.get('/api/my-profile', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const profiles = await storage.getSkillProfiles();
       const userProfile = profiles.find(profile => profile.userId === userId);
       
@@ -260,7 +284,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin stats endpoint
   app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -278,7 +305,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Password management endpoints
   app.get('/api/admin/passwords', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -295,7 +325,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/admin/passwords', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -317,7 +350,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/admin/passwords/:id', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -336,7 +372,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User management endpoints
   app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -353,7 +392,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch('/api/admin/users/:id/admin-status', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -378,7 +420,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Export data endpoint
   app.get('/api/admin/export', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -405,7 +450,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get users without profiles
   app.get('/api/admin/users-without-profiles', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {
@@ -423,7 +471,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Send profile reminder emails
   app.post('/api/admin/send-profile-reminders', isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = getAuthenticatedUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await storage.getUser(userId);
       
       if (!user?.isAdmin) {

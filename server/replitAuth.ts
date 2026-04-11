@@ -3,42 +3,52 @@ import { Strategy, type VerifyFunction } from "openid-client/passport";
 
 import passport from "passport";
 import session from "express-session";
-import type { Express, RequestHandler } from "express";
+import type { Express, Request, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 
-const AUTH_PROVIDER = process.env.AUTH_PROVIDER ?? "oidc";
-const authDomains = (process.env.AUTH_DOMAINS ?? process.env.REPLIT_DOMAINS ?? "")
-  .split(",")
-  .map((domain) => domain.trim())
-  .filter(Boolean);
+const AUTH_PROVIDER = process.env.AUTH_PROVIDER ?? "google";
+const strategyName = "oidc";
 
-const isLocalDev = AUTH_PROVIDER === "local" || (process.env.NODE_ENV === "development" && AUTH_PROVIDER !== "oidc");
+const isLocalDev = AUTH_PROVIDER === "local";
 
 const LOCAL_AUTH_USER_ID = process.env.LOCAL_AUTH_USER_ID ?? "local-dev-user";
 const LOCAL_AUTH_EMAIL = process.env.LOCAL_AUTH_EMAIL ?? "dev@example.com";
 const LOCAL_AUTH_FIRST_NAME = process.env.LOCAL_AUTH_FIRST_NAME ?? "Local";
 const LOCAL_AUTH_LAST_NAME = process.env.LOCAL_AUTH_LAST_NAME ?? "Developer";
 
-if (!isLocalDev && authDomains.length === 0) {
-  throw new Error("AUTH_DOMAINS must be set for OIDC authentication.");
-}
+type SessionUser = Express.User & {
+  access_token?: string;
+  appUserId?: string;
+  claims?: Record<string, any>;
+  expires_at?: number;
+  refresh_token?: string;
+};
 
 const getOidcClient = memoize(
   async () => {
-    const issuerUrl = process.env.OIDC_ISSUER_URL ?? "https://replit.com/oidc";
+    const issuerUrl =
+      process.env.OIDC_ISSUER_URL ??
+      (AUTH_PROVIDER === "google" ? "https://accounts.google.com" : undefined);
     const clientId = process.env.OIDC_CLIENT_ID ?? process.env.REPL_ID;
     if (!clientId) {
       throw new Error("OIDC_CLIENT_ID or REPL_ID must be provided for OIDC authentication.");
     }
-
-    const issuer = await client.Issuer.discover(issuerUrl);
-    const clientConfig: any = { client_id: clientId };
-    if (process.env.OIDC_CLIENT_SECRET) {
-      clientConfig.client_secret = process.env.OIDC_CLIENT_SECRET;
+    if (!issuerUrl) {
+      throw new Error("OIDC_ISSUER_URL must be provided for OIDC authentication.");
     }
-    return new issuer.Client(clientConfig);
+
+    const clientAuthentication = process.env.OIDC_CLIENT_SECRET
+      ? client.ClientSecretPost(process.env.OIDC_CLIENT_SECRET)
+      : client.None();
+
+    return client.discovery(
+      new URL(issuerUrl),
+      clientId,
+      undefined,
+      clientAuthentication,
+    );
   },
   { maxAge: 3600 * 1000 }
 );
@@ -66,37 +76,58 @@ export function getSession() {
 }
 
 function updateUserSession(
-  user: any,
+  user: SessionUser,
   tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
+  appUserId?: string,
 ) {
   user.claims = tokens.claims();
   user.access_token = tokens.access_token;
   user.refresh_token = tokens.refresh_token;
   user.expires_at = user.claims?.exp;
+  user.appUserId = appUserId ?? user.appUserId ?? user.claims?.sub;
 }
 
 async function upsertUser(
   claims: any,
 ) {
-  await storage.upsertUser({
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
+  const email = typeof claims["email"] === "string"
+    ? claims["email"].trim().toLowerCase()
+    : undefined;
+  const existingUser = email ? await storage.getUserByEmail(email) : undefined;
+
+  return storage.upsertUser({
+    id: existingUser?.id ?? claims["sub"],
+    email,
+    firstName: claims["given_name"] ?? claims["first_name"],
+    lastName: claims["family_name"] ?? claims["last_name"],
+    profileImageUrl: claims["picture"] ?? claims["profile_image_url"],
   });
 }
 
-function getStrategyName(domain: string) {
-  return `oidcauth:${domain}`;
+function getRequestOrigin(req: Request) {
+  const host = req.get("host");
+  if (!host) {
+    throw new Error("Unable to determine request host for OIDC callback.");
+  }
+
+  return `${req.protocol}://${host}`;
 }
 
-function getRequestDomain(req: Express.Request) {
-  const hostname = req.hostname;
-  if (authDomains.includes(hostname)) {
-    return hostname;
+function getCallbackUrl(req: Request) {
+  return `${getRequestOrigin(req)}/api/callback`;
+}
+
+function getLoginPrompt() {
+  if (AUTH_PROVIDER === "google") {
+    return "select_account";
   }
-  return authDomains[0] || hostname;
+
+  return "login";
+}
+
+export function getAuthenticatedUserId(req: Request) {
+  const user = req.user as SessionUser | undefined;
+  return user?.appUserId ?? user?.claims?.sub;
 }
 
 export async function setupAuth(app: Express) {
@@ -122,8 +153,11 @@ export async function setupAuth(app: Express) {
           };
 
           upsertUser(mockClaims)
-            .then(() => {
-              const mockUser = { claims: mockClaims };
+            .then((appUser) => {
+              const mockUser: SessionUser = {
+                appUserId: appUser.id,
+                claims: mockClaims,
+              };
               this.success(mockUser);
             })
             .catch((error) => {
@@ -148,40 +182,39 @@ export async function setupAuth(app: Express) {
       tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
       verified: passport.AuthenticateCallback,
     ) => {
-      const user = {};
-      updateUserSession(user, tokens);
-      await upsertUser(tokens.claims());
+      const appUser = await upsertUser(tokens.claims());
+      const user: SessionUser = {};
+      updateUserSession(user, tokens, appUser.id);
       verified(null, user);
     };
 
-    for (const domain of authDomains) {
-      const isLocalhost = domain.includes("localhost");
-      const protocol = isLocalhost ? "http" : "https";
-      const strategy = new Strategy(
-        {
-          name: getStrategyName(domain),
-          config: oidcClient,
-          scope: "openid email profile offline_access",
-          callbackURL: `${protocol}://${domain}/api/callback`,
-        },
-        verify,
-      );
-      passport.use(strategy);
-    }
+    const strategy = new Strategy(
+      {
+        name: strategyName,
+        config: oidcClient,
+        scope: "openid email profile",
+      },
+      verify,
+    );
+    passport.use(strategy);
 
     app.get("/api/login", (req, res, next) => {
-      const domain = getRequestDomain(req);
-      passport.authenticate(getStrategyName(domain), {
-        prompt: "login consent",
-        scope: ["openid", "email", "profile", "offline_access"],
-      })(req, res, next);
+      const authOptions = {
+        callbackURL: getCallbackUrl(req),
+        prompt: getLoginPrompt(),
+        scope: ["openid", "email", "profile"],
+      } as any;
+
+      passport.authenticate(strategyName, authOptions)(req, res, next);
     });
 
     app.get("/api/callback", (req, res, next) => {
-      const domain = getRequestDomain(req);
-      passport.authenticate(getStrategyName(domain), {
-        failureRedirect: "/login",
-      })(req, res, () => {
+      const authOptions = {
+        callbackURL: getCallbackUrl(req),
+        failureRedirect: "/",
+      } as any;
+
+      passport.authenticate(strategyName, authOptions)(req, res, () => {
         res.redirect("/");
       });
     });
@@ -198,14 +231,18 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
-  const user = req.user as any;
+  const user = req.user as SessionUser | undefined;
 
   if (isLocalDev && req.isAuthenticated()) {
     return next();
   }
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  if (!user?.expires_at) {
+    return next();
   }
 
   const now = Math.floor(Date.now() / 1000);
@@ -215,8 +252,7 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   const refreshToken = user.refresh_token;
   if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
+    return next();
   }
 
   try {

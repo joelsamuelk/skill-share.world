@@ -47,7 +47,9 @@ export const queryClient = new QueryClient({
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
+      // Keep route transitions responsive, but allow fresh reads after DB changes
+      // made outside the client (for example manual imports or admin updates).
+      staleTime: 0,
       retry: false,
     },
     mutations: {
