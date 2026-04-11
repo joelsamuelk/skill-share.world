@@ -91,6 +91,17 @@ export default function SkillsForm() {
         }, 500);
         return;
       }
+      if (error instanceof Error && error.message.startsWith("409:")) {
+        toast({
+          title: "Profile already exists",
+          description: "This account or email already has a skills profile. Opening your profile.",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/my-profile";
+        }, 500);
+        return;
+      }
       toast({
         title: "Error",
         description: "Failed to submit profile. Please try again.",

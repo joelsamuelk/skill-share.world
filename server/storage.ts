@@ -19,6 +19,8 @@ export interface IStorage {
   
   // Skill profile operations
   createSkillProfile(profile: InsertSkillProfile): Promise<SkillProfile>;
+  getSkillProfileByUserId(userId: string): Promise<SkillProfile | undefined>;
+  getSkillProfileByEmail(email: string): Promise<SkillProfile | undefined>;
   getSkillProfiles(status?: string): Promise<SkillProfile[]>;
   updateSkillProfileStatus(id: string, status: string, approvedBy?: string): Promise<SkillProfile>;
   updateSkillProfile(id: string, profile: InsertSkillProfile): Promise<SkillProfile>;
@@ -51,7 +53,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const normalizedEmail = email.trim().toLowerCase();
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(sql`lower(trim(${users.email})) = ${normalizedEmail}`);
     return user;
   }
 
@@ -77,6 +83,25 @@ export class DatabaseStorage implements IStorage {
       .values(profile)
       .returning();
     return skillProfile;
+  }
+
+  async getSkillProfileByUserId(userId: string): Promise<SkillProfile | undefined> {
+    const [profile] = await db
+      .select()
+      .from(skillProfiles)
+      .where(eq(skillProfiles.userId, userId))
+      .orderBy(desc(skillProfiles.createdAt));
+    return profile;
+  }
+
+  async getSkillProfileByEmail(email: string): Promise<SkillProfile | undefined> {
+    const normalizedEmail = email.trim().toLowerCase();
+    const [profile] = await db
+      .select()
+      .from(skillProfiles)
+      .where(sql`lower(trim(${skillProfiles.email})) = ${normalizedEmail}`)
+      .orderBy(desc(skillProfiles.createdAt));
+    return profile;
   }
 
   async getSkillProfiles(status?: string): Promise<SkillProfile[]> {

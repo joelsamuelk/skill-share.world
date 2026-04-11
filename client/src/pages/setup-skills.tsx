@@ -1,12 +1,19 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Navigation from "@/components/Navigation";
 import SkillsForm from "@/components/SkillsForm";
+import type { SkillProfile } from "@shared/schema";
 
 export default function SetupSkills() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading } = useAuth();
+  const { data: existingProfile, isLoading: profileLoading } = useQuery<SkillProfile>({
+    queryKey: ["/api/my-profile"],
+    enabled: isAuthenticated,
+    retry: false,
+  });
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -22,7 +29,17 @@ export default function SetupSkills() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  if (isLoading) {
+  useEffect(() => {
+    if (existingProfile) {
+      toast({
+        title: "Profile already exists",
+        description: "Your account already has a skills profile. Redirecting to it now.",
+      });
+      window.location.href = "/my-profile";
+    }
+  }, [existingProfile, toast]);
+
+  if (isLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -34,6 +51,10 @@ export default function SetupSkills() {
   }
 
   if (!isAuthenticated) {
+    return null;
+  }
+
+  if (existingProfile) {
     return null;
   }
 

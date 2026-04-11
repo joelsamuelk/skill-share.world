@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { type Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -50,10 +50,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
+
+      const existingProfileForUser = await storage.getSkillProfileByUserId(userId);
+      if (existingProfileForUser) {
+        return res.status(409).json({
+          message: "A skills profile already exists for this account.",
+          profile: existingProfileForUser,
+        });
+      }
+
       const profileData = insertSkillProfileSchema.parse({
         ...req.body,
         userId
       });
+
+      const normalizedEmail = profileData.email.trim().toLowerCase();
+      profileData.email = normalizedEmail;
+      const existingProfileForEmail = await storage.getSkillProfileByEmail(normalizedEmail);
+      if (existingProfileForEmail) {
+        if (existingProfileForEmail.userId === userId) {
+          return res.status(409).json({
+            message: "A skills profile already exists for this account.",
+            profile: existingProfileForEmail,
+          });
+        }
+
+        return res.status(409).json({
+          message: "A skills profile already exists for this email address. Please sign in with that email or ask an admin to link your account.",
+          profile: existingProfileForEmail,
+        });
+      }
 
       const profile = await storage.createSkillProfile(profileData);
       
@@ -95,6 +121,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to create skill profile" });
     }
   });
+
+  app.put(
+    "/api/local-objects/upload/:objectId",
+    isAuthenticated,
+    express.raw({ type: "image/*", limit: "5mb" }),
+    async (req: any, res) => {
+      try {
+        const objectStorageService = new ObjectStorageService();
+        if (!objectStorageService.isLocalObjectStorageEnabled()) {
+          return res.sendStatus(404);
+        }
+
+        if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+          return res.status(400).json({ message: "Image body is required" });
+        }
+
+        await objectStorageService.writeLocalObjectUpload(
+          req.params.objectId,
+          req.body,
+          req.get("content-type") ?? undefined,
+        );
+
+        res.status(200).json({ success: true });
+      } catch (error) {
+        console.error("Error uploading local object:", error);
+        res.status(500).json({ message: "Failed to upload image" });
+      }
+    },
+  );
 
   app.get('/api/skill-profiles', isAuthenticated, async (req, res) => {
     try {
@@ -198,6 +253,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.sendStatus(401);
       }
       const objectStorageService = new ObjectStorageService();
+
+      if (await objectStorageService.hasLocalObjectEntity(req.path)) {
+        const canAccess = await objectStorageService.canAccessLocalObjectEntity({
+          objectPath: req.path,
+          userId,
+          requestedPermission: ObjectPermission.READ,
+        });
+
+        if (!canAccess) {
+          return res.sendStatus(401);
+        }
+
+        await objectStorageService.downloadLocalObject(req.path, res);
+        return;
+      }
       
       const objectFile = await objectStorageService.getObjectEntityFile(req.path);
       const canAccess = await objectStorageService.canAccessObjectEntity({
@@ -267,8 +337,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      const profiles = await storage.getSkillProfiles();
-      const userProfile = profiles.find(profile => profile.userId === userId);
+      const userProfile = await storage.getSkillProfileByUserId(userId);
       
       if (!userProfile) {
         return res.status(404).json({ message: "Profile not found" });

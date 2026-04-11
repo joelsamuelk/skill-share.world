@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { Storage, File } from "@google-cloud/storage";
 import { Response } from "express";
 import { randomUUID } from "crypto";
@@ -16,6 +18,49 @@ const storageClient = new Storage({
     : undefined,
 });
 
+const LEGACY_PROFILE_PICTURES_DIR = path.resolve(
+  process.cwd(),
+  "data/profile_pictures/profile_pictures",
+);
+
+function getContentTypeForExtension(extension: string): string {
+  switch (extension.toLowerCase()) {
+    case ".jpg":
+    case ".jpeg":
+      return "image/jpeg";
+    case ".png":
+      return "image/png";
+    case ".webp":
+      return "image/webp";
+    case ".gif":
+      return "image/gif";
+    default:
+      return "application/octet-stream";
+  }
+}
+
+function getExtensionForContentType(contentType?: string): string {
+  const normalized = contentType?.split(";")[0]?.trim().toLowerCase();
+  switch (normalized) {
+    case "image/jpeg":
+      return ".jpg";
+    case "image/png":
+      return ".png";
+    case "image/webp":
+      return ".webp";
+    case "image/gif":
+      return ".gif";
+    default:
+      return "";
+  }
+}
+
+type LocalObjectDetails = {
+  aclPolicy: ObjectAclPolicy | null;
+  filePath: string;
+  isLegacyArchive: boolean;
+};
+
 export class ObjectNotFoundError extends Error {
   constructor() {
     super("Object not found");
@@ -26,6 +71,29 @@ export class ObjectNotFoundError extends Error {
 
 export class ObjectStorageService {
   constructor() {}
+
+  isLocalObjectStorageEnabled(): boolean {
+    return Boolean(process.env.LOCAL_OBJECTS_DIR);
+  }
+
+  getLocalObjectsDir(): string {
+    const dir = process.env.LOCAL_OBJECTS_DIR;
+    if (!dir) {
+      throw new Error(
+        "LOCAL_OBJECTS_DIR not set. Use a writable directory path like ./data/objects.",
+      );
+    }
+
+    return path.isAbsolute(dir) ? dir : path.resolve(process.cwd(), dir);
+  }
+
+  getLocalUploadDir(): string {
+    return path.join(this.getLocalObjectsDir(), "uploads");
+  }
+
+  getLocalObjectUploadURL(objectId: string): string {
+    return `/api/local-objects/upload/${objectId}`;
+  }
 
   getPublicObjectSearchPaths(): Array<string> {
     const pathsStr = process.env.PUBLIC_OBJECT_SEARCH_PATHS || "";
@@ -102,6 +170,10 @@ export class ObjectStorageService {
   }
 
   async getObjectEntityUploadURL(): Promise<string> {
+    if (this.isLocalObjectStorageEnabled()) {
+      return this.getLocalObjectUploadURL(randomUUID());
+    }
+
     const privateObjectDir = this.getPrivateObjectDir();
     const objectId = randomUUID();
     const fullPath = `${privateObjectDir}/uploads/${objectId}`;
@@ -142,6 +214,19 @@ export class ObjectStorageService {
   }
 
   normalizeObjectEntityPath(rawPath: string): string {
+    if (rawPath.startsWith("/api/local-objects/upload/")) {
+      const objectId = rawPath.split("/").pop()?.split("?")[0];
+      return objectId ? `/objects/uploads/${objectId}` : rawPath;
+    }
+
+    if (rawPath.startsWith("http://") || rawPath.startsWith("https://")) {
+      const url = new URL(rawPath);
+      if (url.pathname.startsWith("/api/local-objects/upload/")) {
+        const objectId = url.pathname.split("/").pop();
+        return objectId ? `/objects/uploads/${objectId}` : rawPath;
+      }
+    }
+
     if (!rawPath.startsWith("https://storage.googleapis.com/")) {
       return rawPath;
     }
@@ -171,6 +256,16 @@ export class ObjectStorageService {
       return normalizedPath;
     }
 
+    if (this.isLocalObjectStorageEnabled()) {
+      const details = await this.getLocalObjectDetails(normalizedPath);
+      if (!details) {
+        throw new ObjectNotFoundError();
+      }
+
+      await this.setLocalObjectAclPolicy(details.filePath, aclPolicy);
+      return normalizedPath;
+    }
+
     const objectFile = await this.getObjectEntityFile(normalizedPath);
     await setObjectAclPolicy(objectFile, aclPolicy);
     return normalizedPath;
@@ -190,6 +285,175 @@ export class ObjectStorageService {
       objectFile,
       requestedPermission: requestedPermission ?? ObjectPermission.READ,
     });
+  }
+
+  async writeLocalObjectUpload(
+    objectId: string,
+    data: Buffer,
+    contentType?: string,
+  ): Promise<string> {
+    const uploadDir = this.getLocalUploadDir();
+    await fs.promises.mkdir(uploadDir, { recursive: true });
+
+    const existingFiles = await fs.promises.readdir(uploadDir).catch(() => []);
+    await Promise.all(
+      existingFiles
+        .filter(
+          (entry) =>
+            entry === objectId ||
+            entry.startsWith(`${objectId}.`) ||
+            entry.startsWith(`${objectId}.acl.`),
+        )
+        .map((entry) =>
+          fs.promises.rm(path.join(uploadDir, entry), { force: true }),
+        ),
+    );
+
+    const extension = getExtensionForContentType(contentType);
+    const filePath = path.join(uploadDir, `${objectId}${extension}`);
+    await fs.promises.writeFile(filePath, data);
+    return filePath;
+  }
+
+  async hasLocalObjectEntity(objectPath: string): Promise<boolean> {
+    const details = await this.getLocalObjectDetails(objectPath);
+    return Boolean(details);
+  }
+
+  async downloadLocalObject(objectPath: string, res: Response, cacheTtlSec: number = 3600) {
+    const details = await this.getLocalObjectDetails(objectPath);
+    if (!details) {
+      throw new ObjectNotFoundError();
+    }
+
+    const stats = await fs.promises.stat(details.filePath);
+    const extension = path.extname(details.filePath);
+    const contentType = getContentTypeForExtension(extension);
+    const isPublic = details.aclPolicy?.visibility === "public" || details.isLegacyArchive;
+
+    res.set({
+      "Content-Type": contentType,
+      "Content-Length": stats.size.toString(),
+      "Cache-Control": `${isPublic ? "public" : "private"}, max-age=${cacheTtlSec}`,
+    });
+
+    const stream = fs.createReadStream(details.filePath);
+    stream.on("error", (error) => {
+      console.error("Error streaming local object:", error);
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Error streaming file" });
+      }
+    });
+    stream.pipe(res);
+  }
+
+  async canAccessLocalObjectEntity({
+    userId,
+    objectPath,
+    requestedPermission,
+  }: {
+    userId?: string;
+    objectPath: string;
+    requestedPermission?: ObjectPermission;
+  }): Promise<boolean> {
+    const details = await this.getLocalObjectDetails(objectPath);
+    if (!details) {
+      return false;
+    }
+
+    const permission = requestedPermission ?? ObjectPermission.READ;
+    const aclPolicy =
+      details.aclPolicy ??
+      (details.isLegacyArchive
+        ? { owner: "legacy-import", visibility: "public" as const }
+        : null);
+
+    if (!aclPolicy) {
+      return false;
+    }
+
+    if (aclPolicy.visibility === "public" && permission === ObjectPermission.READ) {
+      return true;
+    }
+
+    if (!userId) {
+      return false;
+    }
+
+    return aclPolicy.owner === userId;
+  }
+
+  private async setLocalObjectAclPolicy(
+    filePath: string,
+    aclPolicy: ObjectAclPolicy,
+  ): Promise<void> {
+    await fs.promises.writeFile(
+      `${filePath}.acl.json`,
+      JSON.stringify(aclPolicy, null, 2),
+      "utf8",
+    );
+  }
+
+  private async getLocalObjectDetails(objectPath: string): Promise<LocalObjectDetails | null> {
+    const objectId = this.getLocalObjectId(objectPath);
+    if (!objectId) {
+      return null;
+    }
+
+    const localUploads = await this.findLocalObjectFile(this.getLocalUploadDir(), objectId);
+    if (localUploads) {
+      const aclPolicy = await this.readLocalAclPolicy(localUploads);
+      return {
+        aclPolicy,
+        filePath: localUploads,
+        isLegacyArchive: false,
+      };
+    }
+
+    const legacyFile = await this.findLocalObjectFile(LEGACY_PROFILE_PICTURES_DIR, objectId);
+    if (legacyFile) {
+      return {
+        aclPolicy: null,
+        filePath: legacyFile,
+        isLegacyArchive: true,
+      };
+    }
+
+    return null;
+  }
+
+  private getLocalObjectId(objectPath: string): string | null {
+    if (!objectPath.startsWith("/objects/uploads/")) {
+      return null;
+    }
+
+    return objectPath.replace("/objects/uploads/", "").split("/")[0] || null;
+  }
+
+  private async findLocalObjectFile(dirPath: string, objectId: string): Promise<string | null> {
+    const entries = await fs.promises.readdir(dirPath).catch(() => []);
+    const match = entries.find(
+      (entry) =>
+        !entry.endsWith(".acl.json") &&
+        (entry === objectId || entry.startsWith(`${objectId}.`)),
+    );
+
+    return match ? path.join(dirPath, match) : null;
+  }
+
+  private async readLocalAclPolicy(filePath: string): Promise<ObjectAclPolicy | null> {
+    const aclPath = `${filePath}.acl.json`;
+    const exists = await fs.promises
+      .access(aclPath, fs.constants.R_OK)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!exists) {
+      return null;
+    }
+
+    const content = await fs.promises.readFile(aclPath, "utf8");
+    return JSON.parse(content) as ObjectAclPolicy;
   }
 }
 
