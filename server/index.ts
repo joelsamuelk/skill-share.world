@@ -1,5 +1,5 @@
 import { createApp } from "./app";
-import { log } from "./vite";
+import { log } from "./log";
 
 const { server } = await createApp({ serveClient: true });
 

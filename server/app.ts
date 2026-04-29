@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express, { type NextFunction, type Request, type Response } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { log } from "./log";
 import { storage } from "./storage";
 
 type CreateAppOptions = {
@@ -76,6 +76,7 @@ export async function createApp({ serveClient = true }: CreateAppOptions = {}) {
   });
 
   if (serveClient) {
+    const { setupVite, serveStatic } = await import("./vite");
     if (app.get("env") === "development") {
       await setupVite(app, server);
     } else {

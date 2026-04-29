@@ -1,9 +1,14 @@
 import { Pool, neonConfig } from '@neondatabase/serverless';
 import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
 import * as schema from "@shared/schema";
 
-neonConfig.webSocketConstructor = ws;
+// Use native WebSocket in serverless (Vercel), ws package for local dev
+if (typeof globalThis.WebSocket !== 'undefined') {
+  neonConfig.webSocketConstructor = globalThis.WebSocket;
+} else {
+  const ws = await import("ws");
+  neonConfig.webSocketConstructor = ws.default;
+}
 
 if (!process.env.DATABASE_URL) {
   throw new Error(

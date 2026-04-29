@@ -7,4 +7,5 @@ vite.config.ts.*
 .env
 .config/
 .cache/
+api/index.js
 .vercel
