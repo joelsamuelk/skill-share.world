@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import { setupAuth, isAuthenticated, requireAdmin, getAuthenticatedUserId } from "./replitAuth";
+import { getAuth } from "@clerk/express";
 import { insertSkillProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendEmail, notifyAdminsOfPendingProfile } from "./sendgrid";
@@ -11,6 +12,18 @@ import { sendEmail, notifyAdminsOfPendingProfile } from "./sendgrid";
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // Debug endpoint - test if Clerk middleware is working
+  app.get('/api/auth/debug', (req: any, res) => {
+    try {
+      const auth = getAuth(req);
+      console.log("[debug]", JSON.stringify({ userId: auth?.userId, sessionId: auth?.sessionId }));
+      res.json({ userId: auth?.userId, sessionId: auth?.sessionId });
+    } catch (err: any) {
+      console.error("[debug error]", err.message);
+      res.json({ error: err.message });
+    }
+  });
 
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {

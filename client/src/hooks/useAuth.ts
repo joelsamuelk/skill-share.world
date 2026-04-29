@@ -3,16 +3,19 @@ import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import type { User } from "@shared/schema";
 
 export function useAuth() {
-  const { isSignedIn, isLoaded } = useClerkAuth();
+  const { isSignedIn, isLoaded, getToken } = useClerkAuth();
 
   const { data: user, isLoading: isUserLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     queryFn: async () => {
+      const token = await getToken();
       const res = await fetch("/api/auth/user", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
         credentials: "include",
       });
       if (!res.ok) {
         const text = await res.text();
+        console.error("[useAuth] failed:", res.status, text);
         throw new Error(`${res.status}: ${text}`);
       }
       return res.json();

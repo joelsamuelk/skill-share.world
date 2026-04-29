@@ -7,10 +7,24 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
+const ACCESS_KEY = "skill-share-access";
+
 export default function Landing() {
   const [password, setPassword] = useState("");
-  const [accessGranted, setAccessGranted] = useState(false);
+  const [accessGranted, setAccessGranted] = useState(
+    () => sessionStorage.getItem(ACCESS_KEY) === "true"
+  );
   const { toast } = useToast();
+
+  const grantAccess = () => {
+    sessionStorage.setItem(ACCESS_KEY, "true");
+    setAccessGranted(true);
+  };
+
+  const revokeAccess = () => {
+    sessionStorage.removeItem(ACCESS_KEY);
+    setAccessGranted(false);
+  };
 
   const validatePassword = useMutation({
     mutationFn: async (password: string) => {
@@ -19,7 +33,7 @@ export default function Landing() {
     },
     onSuccess: (data) => {
       if (data.valid) {
-        setAccessGranted(true);
+        grantAccess();
       } else {
         toast({
           title: "Access Denied",
@@ -28,7 +42,7 @@ export default function Landing() {
         });
       }
     },
-    onError: (error) => {
+    onError: () => {
       toast({
         title: "Error",
         description: "Failed to validate password. Please try again.",
@@ -104,12 +118,22 @@ export default function Landing() {
             </CardContent>
           </Card>
         ) : (
-          <div className="flex justify-center">
-            <SignIn
-              routing="hash"
-              afterSignInUrl="/"
-              afterSignUpUrl="/"
-            />
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <SignIn
+                routing="hash"
+                forceRedirectUrl="/"
+              />
+            </div>
+            <div className="text-center">
+              <Button
+                variant="ghost"
+                className="text-muted-foreground"
+                onClick={revokeAccess}
+              >
+                Back
+              </Button>
+            </div>
           </div>
         )}
       </div>
