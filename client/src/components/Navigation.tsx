@@ -2,12 +2,14 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/useAuth";
+import { useClerk } from "@clerk/clerk-react";
 import { Menu, LogOut } from "lucide-react";
 import { useState } from "react";
 
 export default function Navigation() {
   const [location] = useLocation();
   const { user } = useAuth();
+  const { signOut } = useClerk();
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (path: string) => location === path;
@@ -75,7 +77,7 @@ export default function Navigation() {
               variant="ghost"
               size="sm"
               className="hidden lg:flex text-muted-foreground hover:text-foreground nav-btn"
-              onClick={() => window.location.href = "/api/logout"}
+              onClick={() => signOut()}
               data-testid="button-logout"
             >
               <LogOut className="h-4 w-4" />
@@ -150,7 +152,7 @@ export default function Navigation() {
                       className="w-full justify-start text-muted-foreground hover:text-foreground font-brandon font-medium nav-btn"
                       onClick={() => {
                         handleNavClick();
-                        window.location.href = "/api/logout";
+                        signOut();
                       }}
                       data-testid="mobile-button-logout"
                     >

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { SignIn } from "@clerk/clerk-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
   const [password, setPassword] = useState("");
+  const [accessGranted, setAccessGranted] = useState(false);
   const { toast } = useToast();
 
   const validatePassword = useMutation({
@@ -17,7 +19,7 @@ export default function Landing() {
     },
     onSuccess: (data) => {
       if (data.valid) {
-        window.location.href = "/api/login";
+        setAccessGranted(true);
       } else {
         toast({
           title: "Access Denied",
@@ -56,50 +58,60 @@ export default function Landing() {
             Skill Share Portal
           </p>
         </div>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-brandon font-medium text-lg" data-testid="card-title">
-              Access Required
-            </CardTitle>
-            <p className="text-muted-foreground text-sm font-light" data-testid="card-description">
-              Please enter the access password to continue
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium mb-2">
-                  Password
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
-                  required
-                  data-testid="input-password"
-                />
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={validatePassword.isPending}
-                data-testid="button-submit"
-              >
-                {validatePassword.isPending ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin mr-2"></i>
-                    Validating...
-                  </>
-                ) : (
-                  "Enter"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+
+        {!accessGranted ? (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-brandon font-medium text-lg" data-testid="card-title">
+                Access Required
+              </CardTitle>
+              <p className="text-muted-foreground text-sm font-light" data-testid="card-description">
+                Please enter the access password to continue
+              </p>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium mb-2">
+                    Password
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    required
+                    data-testid="input-password"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={validatePassword.isPending}
+                  data-testid="button-submit"
+                >
+                  {validatePassword.isPending ? (
+                    <>
+                      <i className="fas fa-spinner fa-spin mr-2"></i>
+                      Validating...
+                    </>
+                  ) : (
+                    "Enter"
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="flex justify-center">
+            <SignIn
+              routing="hash"
+              afterSignInUrl="/"
+              afterSignUpUrl="/"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

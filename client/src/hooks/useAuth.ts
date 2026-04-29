@@ -1,45 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import type { User } from "@shared/schema";
 
-async function fetchUser() {
-  const res = await fetch("/api/auth/user", {
-    credentials: "include",
-  });
-
-  if (res.status === 401 && window.location.hostname === "localhost") {
-    await fetch("/api/login", {
-      credentials: "include",
-    });
-
-    const retry = await fetch("/api/auth/user", {
-      credentials: "include",
-    });
-
-    if (retry.ok) {
-      return retry.json();
-    }
-
-    throw new Error("Unauthorized");
-  }
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`${res.status}: ${text}`);
-  }
-
-  return res.json();
-}
-
 export function useAuth() {
-  const { data: user, isLoading } = useQuery<User>({
+  const { isSignedIn, isLoaded } = useClerkAuth();
+
+  const { data: user, isLoading: isUserLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
-    queryFn: fetchUser,
+    queryFn: async () => {
+      const res = await fetch("/api/auth/user", {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`${res.status}: ${text}`);
+      }
+      return res.json();
+    },
+    enabled: isLoaded && !!isSignedIn,
     retry: false,
   });
 
   return {
     user,
-    isLoading,
-    isAuthenticated: !!user,
+    isLoading: !isLoaded || (isSignedIn && isUserLoading),
+    isAuthenticated: !!isSignedIn && !!user,
   };
 }
