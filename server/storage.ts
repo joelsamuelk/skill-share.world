@@ -41,6 +41,7 @@ export interface IStorage {
   }>;
   getAllUsers(): Promise<User[]>;
   updateUserAdminStatus(id: string, isAdmin: boolean): Promise<User>;
+  deleteUser(id: string): Promise<void>;
   getUsersWithoutProfiles(): Promise<User[]>;
   getAdmins(): Promise<User[]>;
 }
@@ -259,6 +260,11 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .where(sql`${users.id} NOT IN ${usersWithProfiles}`)
       .orderBy(desc(users.createdAt));
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(skillProfiles).where(eq(skillProfiles.userId, id));
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getAdmins(): Promise<User[]> {
