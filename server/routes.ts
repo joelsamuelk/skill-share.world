@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
-import { setupAuth, isAuthenticated, getAuthenticatedUserId } from "./replitAuth";
+import { setupAuth, isAuthenticated, requireAdmin, getAuthenticatedUserId } from "./replitAuth";
 import { insertSkillProfileSchema } from "@shared/schema";
 import { z } from "zod";
 import { sendEmail, notifyAdminsOfPendingProfile } from "./sendgrid";
@@ -162,20 +162,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/skill-profiles/:id/status', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/skill-profiles/:id/status', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;
       const { status } = req.body;
       const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      // Check if user is admin
-      const user = await storage.getUser(userId);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       const profile = await storage.updateSkillProfileStatus(id, status, userId);
       res.json(profile);
@@ -223,19 +214,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/skill-profiles/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/skill-profiles/:id', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const { id } = req.params;
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      // Check if user is admin
-      const user = await storage.getUser(userId);
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
 
       await storage.deleteSkillProfile(id);
       res.json({ success: true });
@@ -351,18 +332,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin stats endpoint
-  app.get('/api/admin/stats', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/stats', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const stats = await storage.getAdminStats();
       res.json(stats);
     } catch (error) {
@@ -372,18 +343,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Password management endpoints
-  app.get('/api/admin/passwords', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/passwords', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const passwords = await storage.getAccessPasswords();
       res.json(passwords);
     } catch (error) {
@@ -392,18 +353,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/admin/passwords', isAuthenticated, async (req: any, res) => {
+  app.post('/api/admin/passwords', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const { password } = req.body;
       if (!password || password.trim().length < 3) {
         return res.status(400).json({ message: "Password must be at least 3 characters" });
@@ -417,18 +368,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/admin/passwords/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/admin/passwords/:id', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const { id } = req.params;
       await storage.deactivateAccessPassword(id);
       res.json({ success: true });
@@ -439,18 +380,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // User management endpoints
-  app.get('/api/admin/users', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/users', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const users = await storage.getAllUsers();
       res.json(users);
     } catch (error) {
@@ -459,18 +390,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch('/api/admin/users/:id/admin-status', isAuthenticated, async (req: any, res) => {
+  app.patch('/api/admin/users/:id/admin-status', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const { id } = req.params;
       const { isAdmin } = req.body;
 
@@ -487,18 +408,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export data endpoint
-  app.get('/api/admin/export', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/export', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const profiles = await storage.getSkillProfiles('approved');
       
       // Convert to CSV format
@@ -517,18 +428,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get users without profiles
-  app.get('/api/admin/users-without-profiles', isAuthenticated, async (req: any, res) => {
+  app.get('/api/admin/users-without-profiles', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const usersWithoutProfiles = await storage.getUsersWithoutProfiles();
       res.json(usersWithoutProfiles);
     } catch (error) {
@@ -538,18 +439,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Send profile reminder emails
-  app.post('/api/admin/send-profile-reminders', isAuthenticated, async (req: any, res) => {
+  app.post('/api/admin/send-profile-reminders', isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const userId = getAuthenticatedUserId(req);
-      if (!userId) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      const user = await storage.getUser(userId);
-      
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
-      }
-
       const { fromEmail } = req.body;
       if (!fromEmail || !fromEmail.includes('@')) {
         return res.status(400).json({ message: "Valid 'fromEmail' is required" });

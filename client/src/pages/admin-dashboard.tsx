@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect } from "react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import Navigation from "@/components/Navigation";
@@ -21,32 +20,6 @@ export default function AdminDashboard() {
   const [editingProfile, setEditingProfile] = useState<SkillProfile | null>(null);
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [fromEmail, setFromEmail] = useState("");
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
-  // Redirect non-admin users
-  useEffect(() => {
-    if (user && !user.isAdmin) {
-      toast({
-        title: "Access Denied",
-        description: "Admin access required for this page.",
-        variant: "destructive",
-      });
-      window.location.href = "/";
-    }
-  }, [user, toast]);
 
   const { data: stats, isLoading: statsLoading } = useQuery<{
     pendingCount: number;
@@ -184,21 +157,6 @@ export default function AdminDashboard() {
       });
     },
   });
-
-  if (isLoading || (!user?.isAdmin && user)) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-GB', {

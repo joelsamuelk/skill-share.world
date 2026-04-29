@@ -12,6 +12,7 @@ import ViewSkills from "@/pages/view-skills";
 import MyProfile from "@/pages/my-profile";
 import AdminDashboard from "@/pages/admin-dashboard";
 import ManageUsers from "@/pages/manage-users";
+import AdminGuard from "@/components/AdminGuard";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,8 +38,8 @@ function Router() {
           <Route path="/setup-skills" component={SetupSkills} />
           <Route path="/view-skills" component={ViewSkills} />
           <Route path="/my-profile" component={MyProfile} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/admin/users" component={ManageUsers} />
+          <Route path="/admin">{() => <AdminGuard><AdminDashboard /></AdminGuard>}</Route>
+          <Route path="/admin/users">{() => <AdminGuard><ManageUsers /></AdminGuard>}</Route>
         </>
       )}
       <Route component={NotFound} />

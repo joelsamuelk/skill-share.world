@@ -230,6 +230,19 @@ export async function setupAuth(app: Express) {
   });
 }
 
+export const requireAdmin: RequestHandler = async (req, res, next) => {
+  const user = req.user as SessionUser | undefined;
+  const userId = user?.appUserId ?? user?.claims?.sub;
+  if (!userId) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  const dbUser = await storage.getUser(userId);
+  if (!dbUser?.isAdmin) {
+    return res.status(403).json({ message: "Admin access required" });
+  }
+  next();
+};
+
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as SessionUser | undefined;
 
